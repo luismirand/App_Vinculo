@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062161053337",
+    "project_id": "app-compra-y-venta-a701d",
+    "storage_bucket": "app-compra-y-venta-a701d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062161053337:android:424ce02ab899b3fd42aa08",
+        "android_client_info": {
+          "package_name": "com.unison.appcomprayventa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN9nd2ywiOV3uWRMfhbUVfeugdfuhUGKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
