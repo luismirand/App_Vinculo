@@ -21,10 +21,10 @@
             android:id="@+id/appName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Binku"
+            android:text="BINKU"
             android:textColor="@color/guinda"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:textSize="60sp"
+            android:fontFamily="@font/font_bold"/>
 
     </LinearLayout>
 
@@ -55,8 +55,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/m_button_height"
                 android:layout_marginTop="10dp"
-                app:cornerRadius="50dp"
-                app:icon="@drawable/email"
+                app:icon="@drawable/ic_mail"
+                app:iconSize="25dp"
                 app:iconTint="@android:color/white"
                 app:iconPadding="12dp"
                 app:backgroundTint="#800020" />
@@ -71,7 +71,8 @@
                 android:layout_height="@dimen/m_button_height"
                 android:layout_marginTop="20dp"
                 app:cornerRadius="50dp"
-                app:icon="@drawable/google"
+                app:icon="@drawable/ic_google"
+                app:iconSize="20dp"
                 app:iconTint="@android:color/white"
                 app:iconPadding="12dp"
                 app:backgroundTint="#800020" />

@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun verFragmentoFeed(){
-        binding.TituloRL.text="Feed Principal"
+        binding.TituloRL.text="Feed"
         val fragment = FragmentFeed()
         val fragmentTransition = supportFragmentManager.beginTransaction()
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentInicio")

@@ -8,8 +8,8 @@
 
     <string name="TituloRL">Binku</string>
 
-    <string name="Ingresar_email">Ingresar con email</string>
-    <string name="Ingresar_google">Ingresar con google</string>
+    <string name="Ingresar_email">Iniciar sesión con Email</string>
+    <string name="Ingresar_google">Iniciar sesión con Google</string>
 
     <string name="Txt_login">Login de usuario</string>
     <string name="Et_email">Email</string>
