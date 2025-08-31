@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFC0CB"
+    android:background="@color/background"
     tools:context=".Opciones_Login.Login_email">
 
     <!-- Card blanca -->
@@ -28,10 +28,10 @@
 
             <!-- Título -->
             <TextView
-                android:text="Ingresa a Vinculo"
+                android:text="Iniciar sesión"
                 android:textStyle="bold"
                 android:textSize="24sp"
-                android:textColor="#800020"
+                android:textColor="@color/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

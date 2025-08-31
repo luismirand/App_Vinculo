@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">App Compra y Venta</string>
+    <string name="app_name">Binku</string>
     <string name="Item_Inicio">Feed</string>
     <string name="Item_Chats">Videos</string>
     <string name="Item_Vender">Publicar</string>
     <string name="Item_Mis_Anuncios">Notificaciones</string>
     <string name="Item_Cuenta">Perfil</string>">
 
-    <string name="TituloRL">Vinculo App</string>
+    <string name="TituloRL">Binku</string>
 
     <string name="Ingresar_email">Ingresar con email</string>
     <string name="Ingresar_google">Ingresar con google</string>

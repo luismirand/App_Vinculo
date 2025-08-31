@@ -6,10 +6,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFC0CB"
+    android:background="@color/background"
     tools:context=".MainActivity">
 
     <!-- Toolbar -->
+
+    <!-- Fragment container -->
+    <!-- 🔹 Fondo rosa para coherencia en los fragments -->
+
+    <!-- Línea encima del BottomNavigation -->
     <RelativeLayout
         android:id="@+id/ToolbarRL"
         android:layout_width="match_parent"
@@ -19,25 +24,21 @@
 
         <TextView
             android:id="@+id/TituloRL"
-            android:text="@string/TituloRL"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="#800020"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:text="@string/TituloRL"
+            android:textColor="#800020"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:background="#DDDDDD" />
     </RelativeLayout>
 
-    <!-- Fragment container -->
-    <!-- 🔹 Fondo rosa para coherencia en los fragments -->
-
-    <!-- Línea encima del BottomNavigation -->
     <FrameLayout
         android:id="@+id/FragmentL1"
         android:layout_width="match_parent"
@@ -46,7 +47,7 @@
         android:layout_below="@+id/ToolbarRL"
         android:layout_marginTop="18dp"
         android:layout_marginBottom="-18dp"
-        android:background="#FFC0CB" />
+        android:background="@color/background" />
 
     <View
         android:id="@+id/View1"

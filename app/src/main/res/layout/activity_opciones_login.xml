@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFC0CB"
+    android:background="@color/background"
     tools:context=".OpcionesLogin">
 
     <!-- Encabezado -->
@@ -21,10 +21,10 @@
             android:id="@+id/appName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vinculo"
-            android:textColor="#800020"
+            android:text="Binku"
+            android:textColor="@color/guinda"
             android:textSize="40sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
