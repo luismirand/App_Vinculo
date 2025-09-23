@@ -1,9 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.AppCompraYVenta" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+
 
     <style name="Theme.AppCompraYVenta" parent="Base.Theme.AppCompraYVenta" />
+
+    <style name="Base.Theme.AppCompraYVenta" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/guinda</item>
+        <item name="colorPrimaryVariant">@color/guinda</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+    <style name="App.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/guinda_ripple</item>
+    </style>
 </resources>

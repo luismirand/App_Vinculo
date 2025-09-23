@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1062161053337",
-    "project_id": "app-compra-y-venta-a701d",
-    "storage_bucket": "app-compra-y-venta-a701d.firebasestorage.app"
+    "project_number": "25580175423",
+    "project_id": "binkuapp-ee2c5",
+    "storage_bucket": "binkuapp-ee2c5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1062161053337:android:424ce02ab899b3fd42aa08",
+        "mobilesdk_app_id": "1:25580175423:android:8f06a1f2fd209caf43f88a",
         "android_client_info": {
           "package_name": "com.unison.appcomprayventa"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCN9nd2ywiOV3uWRMfhbUVfeugdfuhUGKU"
+          "current_key": "AIzaSyD0PwQXVouohfWwqFXvzJtlWIF15dUAolU"
         }
       ],
       "services": {

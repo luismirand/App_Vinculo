@@ -1,8 +1,9 @@
 package com.unison.appcomprayventa
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.unison.appcomprayventa.Fragmentos.FragmentFeed
 import com.unison.appcomprayventa.Fragmentos.FragmentNotificaciones
 import com.unison.appcomprayventa.Fragmentos.FragmentPerfil
@@ -11,29 +12,39 @@ import com.unison.appcomprayventa.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+
+        // Inicializamos y comprobamos la sesión de Firebase
+        firebaseAuth = FirebaseAuth.getInstance()
+        comprobarSesion()
+
+        // El fragmento inicial sigue siendo el Feed
         verFragmentoFeed()
 
+        // Tu código original para la navegación no ha cambiado
         binding.BottomNV.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.Item_Feed->{
                     verFragmentoFeed()
-                true }
+                    true
+                }
                 R.id.Item_Videos->{
                     verFragmentoVideos()
-                true }
+                    true
+                }
                 R.id.Item_Notificaciones->{
                     verFragmentoNotificaciones()
-                true }
+                    true
+                }
                 R.id.Item_Perfil->{
                     verFragmentoPerfil()
-                true }
+                    true
+                }
                 else -> {
                     false
                 }
@@ -41,11 +52,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Nueva función para verificar si el usuario ha iniciado sesión
+    private fun comprobarSesion() {
+        if (firebaseAuth.currentUser == null){
+            startActivity(Intent(this, OpcionesLogin::class.java))
+            finishAffinity()
+        }
+    }
+
+    // Tus funciones originales para mostrar los fragmentos no han cambiado
     private fun verFragmentoFeed(){
         binding.TituloRL.text="Feed"
         val fragment = FragmentFeed()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentInicio")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentFeed")
         fragmentTransition.commit()
     }
 
@@ -53,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         binding.TituloRL.text="Videos"
         val fragment = FragmentVideos()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentChats")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentVideos")
         fragmentTransition.commit()
     }
 
@@ -61,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         binding.TituloRL.text="Notificaciones"
         val fragment = FragmentNotificaciones()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentMisAnuncios")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentNotificaciones")
         fragmentTransition.commit()
     }
 
@@ -69,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         binding.TituloRL.text="Mi Perfil"
         val fragment = FragmentPerfil()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentCuenta")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentPerfil")
         fragmentTransition.commit()
     }
 }
