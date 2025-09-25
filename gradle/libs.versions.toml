@@ -12,6 +12,7 @@ constraintlayout = "2.1.4"
 googleServicesversion = "4.4.3"
 firebaseAuthV = "24.0.1"
 firebaseDatabaseV = "22.0.0"
+loginGoogleV = "21.4.0"
 
 
 [libraries]
@@ -25,6 +26,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebaseAuth = {group = "com.google.firebase", name= "firebase-auth", version.ref = "firebaseAuthV"}
 firebaseDatabase = {group = "com.google.firebase", name= "firebase-database", version.ref = "firebaseDatabaseV"}
+loginGoogle = {group = "com.google.android.gms", name= "play-services-auth", version.ref = "loginGoogleV"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
