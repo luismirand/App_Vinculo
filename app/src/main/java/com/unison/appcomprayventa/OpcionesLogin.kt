@@ -3,14 +3,16 @@ package com.unison.appcomprayventa
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 import com.unison.appcomprayventa.Opciones_Login.Login_email
 import com.unison.appcomprayventa.databinding.ActivityOpcionesLoginBinding
 
@@ -29,20 +31,99 @@ class OpcionesLogin : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         comprobarSesion()
 
+        // Inicializar ProgressDialog
+        progressDialog = ProgressDialog(this)
+        progressDialog.setTitle("Por favor espere")
+        progressDialog.setCanceledOnTouchOutside(false)
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        binding.IngresarGoogle.setOnClickListener {
+            googleLogin()
+        }
         binding.IngresarEmail.setOnClickListener {
-            startActivity(Intent(this@OpcionesLogin, Login_email::class.java))
+            startActivity(Intent(this, Login_email::class.java))
         }
     }
 
+    private fun googleLogin() {
+        val googleSignInIntent = mGoogleSignInClient.signInIntent
+        googleSignInARL.launch(googleSignInIntent)
+    }
+
+    private val googleSignInARL = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { resultado ->
+        if (resultado.resultCode == RESULT_OK) {
+            val data = resultado.data
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val cuenta = task.getResult(ApiException::class.java)
+                autenticacionGoogle(cuenta.idToken)
+            } catch (e: ApiException) {
+                Toast.makeText(this, "Fallo en el inicio de sesión: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun autenticacionGoogle(idToken: String?) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        firebaseAuth.signInWithCredential(credential)
+            .addOnSuccessListener { resultadoAuth ->
+                if (resultadoAuth.additionalUserInfo!!.isNewUser) {
+                    llenarInfoBD()
+                } else {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finishAffinity()
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Fallo en la autenticación: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun llenarInfoBD() {
+        progressDialog.setMessage("Guardando información")
+        progressDialog.show() // Mostrar el diálogo antes de la operación
+
+        val tiempo = Constantes.obtenerTiempoDis()
+        val emailUsuario = firebaseAuth.currentUser!!.email
+        val uidUsuario = firebaseAuth.uid
+        val nombreUsuario = firebaseAuth.currentUser!!.displayName
+
+        val hashMap = HashMap<String, Any?>()
+        hashMap["nombres"] = "$nombreUsuario"
+        hashMap["codigoTelefono"] = ""
+        hashMap["telefono"] = ""
+        hashMap["urlImagenPerfil"] = ""
+        hashMap["proveedor"] = "Google"
+        hashMap["escribiendo"] = ""
+        hashMap["tiempo"] = tiempo
+        hashMap["online"] = true
+        hashMap["email"] = "$emailUsuario"
+        hashMap["uid"] = "$uidUsuario"
+        hashMap["fecha_nac"] = ""
+
+        val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+        ref.child(uidUsuario!!)
+            .setValue(hashMap)
+            .addOnSuccessListener {
+                progressDialog.dismiss()
+                startActivity(Intent(this, MainActivity::class.java))
+                finishAffinity()
+            }
+            .addOnFailureListener { exception ->
+                progressDialog.dismiss()
+                Toast.makeText(this, "No se registró debido a ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
     private fun comprobarSesion() {
-        if (firebaseAuth.currentUser != null){
+        if (firebaseAuth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
             finishAffinity()
         }
