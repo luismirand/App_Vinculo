@@ -1,4 +1,4 @@
-package com.unison.appcomprayventa
+package com.unison.binku
 
 object Constantes {
     fun obtenerTiempoDis(): Long{

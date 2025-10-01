@@ -1,4 +1,4 @@
-package com.unison.appcomprayventa
+package com.unison.binku
 
 import org.junit.Test
 

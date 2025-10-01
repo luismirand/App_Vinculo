@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "App Compra y Venta"
+rootProject.name = "BinkuApp"
 include(":app")

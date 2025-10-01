@@ -1,11 +1,11 @@
-package com.unison.appcomprayventa.Fragmentos
+package com.unison.binku.Fragmentos
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.unison.appcomprayventa.R
+import com.unison.binku.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

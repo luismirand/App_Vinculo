@@ -12,11 +12,11 @@ android {
         viewBinding = true
     }
 
-    namespace = "com.unison.appcomprayventa"
+    namespace = "com.unison.binku"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.unison.appcomprayventa"
+        applicationId = "com.unison.binku"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

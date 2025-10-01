@@ -1,4 +1,4 @@
-package com.unison.appcomprayventa
+package com.unison.binku
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -13,8 +13,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
-import com.unison.appcomprayventa.Opciones_Login.Login_email
-import com.unison.appcomprayventa.databinding.ActivityOpcionesLoginBinding
+import com.unison.binku.Opciones_Login.Login_email
+import com.unison.binku.databinding.ActivityOpcionesLoginBinding
 
 class OpcionesLogin : AppCompatActivity() {
 
@@ -74,12 +74,12 @@ class OpcionesLogin : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener { resultadoAuth ->
-                if (resultadoAuth.additionalUserInfo!!.isNewUser) {
+//                if (resultadoAuth.additionalUserInfo!!.isNewUser) {
                     llenarInfoBD()
-                } else {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finishAffinity()
-                }
+//                } else {
+//                    startActivity(Intent(this, MainActivity::class.java))
+//                    finishAffinity()
+//                }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Fallo en la autenticación: ${e.message}", Toast.LENGTH_SHORT).show()

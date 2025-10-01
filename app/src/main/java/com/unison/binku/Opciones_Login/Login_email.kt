@@ -1,19 +1,15 @@
-package com.unison.appcomprayventa.Opciones_Login
+package com.unison.binku.Opciones_Login
 
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
-import com.unison.appcomprayventa.MainActivity
-import com.unison.appcomprayventa.R
-import com.unison.appcomprayventa.Registro_email
-import com.unison.appcomprayventa.databinding.ActivityLoginEmailBinding
+import com.unison.binku.MainActivity
+import com.unison.binku.Registro_email
+import com.unison.binku.databinding.ActivityLoginEmailBinding
 
 class Login_email : AppCompatActivity() {
 

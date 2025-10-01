@@ -1,4 +1,4 @@
-package com.unison.appcomprayventa.Fragmentos
+package com.unison.binku.Fragmentos
 
 import android.content.Context
 import android.os.Bundle
@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.auth.FirebaseAuth
-import com.unison.appcomprayventa.R
-import com.unison.appcomprayventa.databinding.FragmentPerfilBinding
+import com.unison.binku.databinding.FragmentPerfilBinding
 
 class FragmentPerfil : Fragment() {
 

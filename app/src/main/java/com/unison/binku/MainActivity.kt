@@ -1,14 +1,14 @@
-package com.unison.appcomprayventa
+package com.unison.binku
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.unison.appcomprayventa.Fragmentos.FragmentFeed
-import com.unison.appcomprayventa.Fragmentos.FragmentNotificaciones
-import com.unison.appcomprayventa.Fragmentos.FragmentPerfil
-import com.unison.appcomprayventa.Fragmentos.FragmentVideos
-import com.unison.appcomprayventa.databinding.ActivityMainBinding
+import com.unison.binku.Fragmentos.FragmentFeed
+import com.unison.binku.Fragmentos.FragmentNotificaciones
+import com.unison.binku.Fragmentos.FragmentPerfil
+import com.unison.binku.Fragmentos.FragmentVideos
+import com.unison.binku.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

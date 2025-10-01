@@ -1,17 +1,14 @@
-package com.unison.appcomprayventa
+package com.unison.binku
 
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.unison.appcomprayventa.databinding.ActivityRegistroEmailBinding
+import com.unison.binku.databinding.ActivityRegistroEmailBinding
 
 class Registro_email : AppCompatActivity() {
     private lateinit var binding: ActivityRegistroEmailBinding
