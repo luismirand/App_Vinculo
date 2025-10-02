@@ -41,7 +41,7 @@
                 android:src="@drawable/ic_login"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:contentDescription="Ingresa a Vinculo"/>
+                android:contentDescription="Ingresa a Binku"/>
 
             <!-- Campo Email -->
             <com.google.android.material.textfield.TextInputLayout

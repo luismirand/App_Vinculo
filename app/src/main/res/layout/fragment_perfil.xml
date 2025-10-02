@@ -32,18 +32,139 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+            <ImageView
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_login"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:contentDescription="Ingresa a Binku"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Información"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="start"
+                android:layout_marginTop="16dp"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:columnCount="2">
+
+                <!--                Nombres-->
+                <TextView
+                    android:text="Nombres:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="Nombre Completo"
+                    android:layout_marginBottom="5dp"/>
+                <!--                Email-->
+                <TextView
+                    android:text="Email:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_email"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="luis@gmail.com"
+                    android:layout_marginBottom="5dp"/>
+                <!--                Fecha de nacimiento-->
+                <TextView
+                    android:text="Fecha de nacimiento:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_fecha_nac"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="dd/mm/aaaa"
+                    android:layout_marginBottom="5dp"/>
+
+                <!--                Miembro desde-->
+                <TextView
+                    android:text="Miembro desde:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_miembro_desde"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="dd/mm/aaaa"
+                    android:layout_marginBottom="5dp"/>
+
+                <!--                Telefono-->
+                <TextView
+                    android:text="Teléfono:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_telefono"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="(+ ) gggggggggg"
+                    android:layout_marginBottom="5dp"/>
+                <!--                Estado de cuenta-->
+                <TextView
+                    android:text="Estado de cuenta:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_estado_cuenta"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:gravity="end"
+                    android:text="No verificado"
+                    android:layout_marginBottom="5dp"/>
+
+
+            </GridLayout>
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/Btn_cerrar_sesion"
-                android:text="@string/Btn_cerrar_sesion"
+                android:id="@+id/Btn_editar_perfil"
+                android:text="@string/Btn_editar_perfil"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cornerRadius="50dp"
-                app:backgroundTint="#800020"/>
+                app:backgroundTint="#800020"
+                app:icon="@drawable/ic_editar"
+                app:iconSize="25dp"
+                app:iconTint="@android:color/white"
+                app:iconPadding="12dp"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/Btn_cerrar_sesion"
+                android:text="@string/Btn_cerrar_sesion"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cornerRadius="50dp"
+                app:backgroundTint="#800020"
+                app:icon="@drawable/ic_exit"
+                app:iconSize="25dp"
+                app:iconTint="@android:color/white"
+                app:iconPadding="12dp"/>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>
+
