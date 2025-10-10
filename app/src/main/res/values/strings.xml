@@ -22,13 +22,28 @@
     <string name="Txt_registro">Registro de Usuario</string>
     <string name="Et_r_password">Repetir contraseña</string>
     <string name="Btn_registrar">Registrar</string>
-
-    <string name="Btn_cerrar_sesion">Cerrar Sesión</string>
-    <string name="Btn_editar_perfil">Editar Perfil</string>">
     
     <string name="default_web_client_id">25580175423-ekfukcl56sblajjonumkeuejh8ht1knu.apps.googleusercontent.com</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--    Perfil de usuario-->
+    <string name="Txt_perfil">Perfil de usuario</string>">
+    <string name="Txt_informacion">Información: </string>">
+    <string name="Txt_nombres">Nombres:</string>
+    <string name="Tv_nombres">Nombres completos</string>
+    <string name="Txt_email">Email: </string>
+    <string name="Tv_email">email@dominio.com</string>
+    <string name="Txt_nacimiento">Fecha de nac: </string>
+    <string name="Tv_nacimiento"> DD/MM/AAAA</string>
+    <string name="Txt_miembro">Miembro desde: </string>
+    <string name="Tv_miembro"> DD/MM/AAAA</string>
+    <string name="Txt_telefono">Teléfono: </string>
+    <string name="Tv_telefono">9802375082</string>
+    <string name="Txt_estado_cuenta">Estado de cuenta: </string>">
+    <string name="Tv_estado_cuenta">No verificado</string>
+
+    <string name="TxtOpciones">Opciones</string>
+    <string name="Btn_editar_perfil">Editar Perfil</string>
+    <string name="Btn_cerrar_sesion">Cerrar Sesión</string>
+
 
 </resources>
