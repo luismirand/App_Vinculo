@@ -105,9 +105,11 @@ class Registro_email : AppCompatActivity() {
         ref.child(uidUsuario!!)
             .setValue(hashMap)
             .addOnSuccessListener {
+
                 progressDialog.dismiss()
                 startActivity(Intent(this,MainActivity::class.java))
                 finishAffinity()
+
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this,"No se registró debido a ${exception.message}",

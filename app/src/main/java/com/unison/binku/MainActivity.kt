@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun verFragmentoNotificaciones(){
         binding.TituloRL.text="Notificaciones"
-        val fragment = FragmentNotificaciones()
+       val fragment = FragmentNotificaciones()
         val fragmentTransition = supportFragmentManager.beginTransaction()
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentNotificaciones")
         fragmentTransition.commit()

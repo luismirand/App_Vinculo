@@ -22,7 +22,7 @@
     <string name="Txt_registro">Registro de Usuario</string>
     <string name="Et_r_password">Repetir contraseña</string>
     <string name="Btn_registrar">Registrar</string>
-    
+
     <string name="default_web_client_id">25580175423-ekfukcl56sblajjonumkeuejh8ht1knu.apps.googleusercontent.com</string>
 
     <!--    Perfil de usuario-->
@@ -44,6 +44,14 @@
     <string name="TxtOpciones">Opciones</string>
     <string name="Btn_editar_perfil">Editar Perfil</string>
     <string name="Btn_cerrar_sesion">Cerrar Sesión</string>
+
+    <string name="Txt_editar_perfil">Editar Perfil</string>
+    <string name="Et_nombres">Nombres completos</string>
+    <string name="Et_f_nac">Fecha de nac.</string>
+    <string name="Cod_tef">+00</string>
+    <string name="Et_telefono">Teléfono</string>
+    <string name="Btn_actualizar">Actualizar</string>
+
 
 
 </resources>

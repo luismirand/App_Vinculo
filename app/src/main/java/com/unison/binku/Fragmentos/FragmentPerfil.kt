@@ -15,7 +15,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.unison.binku.Constantes
-import com.unison.binku.MainActivity
+import com.unison.binku.EditarPerfil
+import com.unison.binku.OpcionesLogin // Corregido el import a OpcionesLogin
 import com.unison.binku.databinding.FragmentPerfilBinding
 import com.unison.binku.R
 
@@ -24,16 +25,12 @@ class FragmentPerfil : Fragment() {
 
     private lateinit var binding: FragmentPerfilBinding
     private lateinit var firebaseAuth: FirebaseAuth
-
     private lateinit var mContext: Context
 
     override fun onAttach(context: Context) {
         mContext = context
         super.onAttach(context)
     }
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,17 +46,17 @@ class FragmentPerfil : Fragment() {
 
         leerInfo()
 
+        binding.BtnEditarPerfil.setOnClickListener {
+            startActivity(Intent(mContext, EditarPerfil::class.java))
+        }
 
         binding.BtnCerrarSesion.setOnClickListener {
             firebaseAuth.signOut()
-
-            val intent = Intent(mContext, MainActivity::class.java)
-
+            // Corregido para ir a OpcionesLogin
+            val intent = Intent(mContext, OpcionesLogin::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
             mContext.startActivity(intent)
-
-
+            activity?.finishAffinity() // Cierra todas las actividades
         }
     }
 
@@ -78,7 +75,7 @@ class FragmentPerfil : Fragment() {
 
                 val cod_tel = codTelefono + telefono
 
-                if(tiempo == "null"){
+                if(tiempo == "null" || tiempo.isEmpty()){
                     tiempo = "0"
                 }
                 val for_tiempo = Constantes.obtenerFecha(tiempo.toLong())
@@ -89,12 +86,18 @@ class FragmentPerfil : Fragment() {
                 binding.TvTelefono.text = cod_tel
                 binding.TvMiembroDesde.text = for_tiempo
 
+                // --- CORRECCIÓN: Lógica robusta para cargar la imagen ---
                 try{
-                    Glide.with(mContext)
-                        .load(imagen)
-                        .placeholder(R.drawable.ic_exit)
-                        .into(binding.TvPerfil)
-                }catch (e: Exception){
+                    if (imagen.isNotEmpty() && imagen != "null") {
+                        Glide.with(mContext)
+                            .load(imagen)
+                            .placeholder(R.drawable.ic_perfil) // Placeholder mientras carga
+                            .into(binding.TvPerfil) // Asegúrate que TvPerfil sea un ImageView
+                    } else {
+                        // Si no hay imagen, poner el placeholder directamente
+                        binding.TvPerfil.setImageResource(R.drawable.ic_perfil)
+                    }
+                } catch (e: Exception){
                     Toast.makeText(mContext, "${e.message}", Toast.LENGTH_SHORT).show()
                 }
 
@@ -105,17 +108,16 @@ class FragmentPerfil : Fragment() {
                     } else {
                         binding.TvEstadoCuenta.text = "No Verificado"
                     }
-                }else{
+                } else {
                     binding.TvEstadoCuenta.text = "Verificado"
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                // Es bueno tener un mensaje de error aquí
+                Toast.makeText(mContext, "Error al cargar los datos.", Toast.LENGTH_SHORT).show()
             }
 
         })
-
     }
-
 }

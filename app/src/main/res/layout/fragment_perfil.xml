@@ -1,183 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background"
-    tools:context=".Fragmentos.FragmentPerfil">
-
-    <com.google.android.material.card.MaterialCardView
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="10dp"
-        app:cardBackgroundColor="@android:color/white">
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@color/background"
+        tools:context=".Fragmentos.FragmentPerfil">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="25dp"
-            android:gravity="center">
+            android:layout_margin="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            app:cardBackgroundColor="@android:color/white">
 
-            <TextView
-                android:id="@+id/Txt_perfil"
-                android:text="@string/Txt_perfil"
-                android:textStyle="bold"
-                android:textSize="24sp"
-                android:layout_marginBottom="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ImageView
-                android:id="@+id/Tv_perfil"
-                android:layout_marginTop="15dp"
-                android:src="@drawable/ic_login"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:contentDescription="Imagen de perfil"/>
-
-            <TextView
-                android:id="@+id/Txt_informacion"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/Txt_informacion"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:orientation="vertical"
+                android:padding="25dp"
+                android:gravity="center">
 
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:columnCount="2">
-
-                <!-- Nombres -->
                 <TextView
-                    android:id="@+id/Txt_nombres"
-                    android:text="@string/Txt_nombres"
+                    android:id="@+id/Txt_perfil"
+                    android:text="@string/Txt_perfil"
                     android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
+                    android:textSize="24sp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:id="@+id/Tv_perfil"
+                    android:layout_marginTop="15dp"
+                    android:src="@drawable/ic_login"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:contentDescription="Imagen de perfil"/>
+
                 <TextView
-                    android:id="@+id/Tv_nombres"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_nombres"
-                    android:layout_marginBottom="5dp"/>
-                <!-- Email -->
-                <TextView
-                    android:id="@+id/Txt_email"
-                    android:text="@string/Txt_email"
+                    android:id="@+id/Txt_informacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Txt_informacion"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="16dp"/>
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:columnCount="2">
+
+                    <!-- Nombres -->
+                    <TextView
+                        android:id="@+id/Txt_nombres"
+                        android:text="@string/Txt_nombres"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_nombres"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_nombres"
+                        android:layout_marginBottom="5dp"/>
+                    <!-- Email -->
+                    <TextView
+                        android:id="@+id/Txt_email"
+                        android:text="@string/Txt_email"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_email"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_email"
+                        android:layout_marginBottom="5dp"/>
+                    <!-- Fecha de nacimiento -->
+                    <TextView
+                        android:id="@+id/Txt_nacimiento"
+                        android:text="@string/Txt_nacimiento"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_nacimiento"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_nacimiento"
+                        android:layout_marginBottom="5dp"/>
+
+                    <!-- Miembro desde -->
+                    <TextView
+                        android:id="@+id/Txt_miembro_desde"
+                        android:text="@string/Txt_miembro"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_miembro_desde"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_miembro"
+                        android:layout_marginBottom="5dp"/>
+
+                    <!-- Telefono -->
+                    <TextView
+                        android:id="@+id/Txt_telefono"
+                        android:text="@string/Txt_telefono"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_telefono"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_telefono"
+                        android:layout_marginBottom="5dp"/>
+                    <!-- Estado de cuenta -->
+                    <TextView
+                        android:id="@+id/Txt_estado_cuenta"
+                        android:text="@string/Txt_estado_cuenta"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:id="@+id/Tv_estado_cuenta"
+                        android:layout_width="0dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="end"
+                        android:text="@string/Tv_estado_cuenta"
+                        android:layout_marginBottom="5dp"/>
+
+
+                </GridLayout>
+
                 <TextView
-                    android:id="@+id/Tv_email"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_email"
-                    android:layout_marginBottom="5dp"/>
-                <!-- Fecha de nacimiento -->
-                <TextView
-                    android:id="@+id/Txt_nacimiento"
-                    android:text="@string/Txt_nacimiento"
+                    android:id="@+id/TxtOpciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/TxtOpciones"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
-                <TextView
-                    android:id="@+id/Tv_nacimiento"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_nacimiento"
-                    android:layout_marginBottom="5dp"/>
+                    android:layout_marginTop="24dp"/>
 
-                <!-- Miembro desde -->
-                <TextView
-                    android:id="@+id/Txt_miembro_desde"
-                    android:text="@string/Txt_miembro"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
-                <TextView
-                    android:id="@+id/Tv_miembro_desde"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_miembro"
-                    android:layout_marginBottom="5dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/Btn_editar_perfil"
+                    android:text="@string/Btn_editar_perfil"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cornerRadius="50dp"
+                    app:backgroundTint="#800020"
+                    app:icon="@drawable/ic_editar"
+                    app:iconSize="25dp"
+                    app:iconTint="@android:color/white"
+                    app:iconPadding="12dp" />
 
-                <!-- Telefono -->
-                <TextView
-                    android:id="@+id/Txt_telefono"
-                    android:text="@string/Txt_telefono"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
-                <TextView
-                    android:id="@+id/Tv_telefono"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_telefono"
-                    android:layout_marginBottom="5dp"/>
-                <!-- Estado de cuenta -->
-                <TextView
-                    android:id="@+id/Txt_estado_cuenta"
-                    android:text="@string/Txt_estado_cuenta"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="8dp"/>
-                <TextView
-                    android:id="@+id/Tv_estado_cuenta"
-                    android:layout_width="0dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="end"
-                    android:text="@string/Tv_estado_cuenta"
-                    android:layout_marginBottom="5dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/Btn_cerrar_sesion"
+                    android:text="@string/Btn_cerrar_sesion"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cornerRadius="50dp"
+                    app:backgroundTint="#800020"
+                    app:icon="@drawable/ic_exit"
+                    app:iconSize="25dp"
+                    app:iconTint="@android:color/white"
+                    app:iconPadding="12dp"/>
 
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            </GridLayout>
-
-            <TextView
-                android:id="@+id/TxtOpciones"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/TxtOpciones"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginTop="24dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/Btn_editar_perfil"
-                android:text="@string/Btn_editar_perfil"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cornerRadius="50dp"
-                app:backgroundTint="#800020"
-                app:icon="@drawable/ic_editar"
-                app:iconSize="25dp"
-                app:iconTint="@android:color/white"
-                app:iconPadding="12dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/Btn_cerrar_sesion"
-                android:text="@string/Btn_cerrar_sesion"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cornerRadius="50dp"
-                app:backgroundTint="#800020"
-                app:icon="@drawable/ic_exit"
-                app:iconSize="25dp"
-                app:iconTint="@android:color/white"
-                app:iconPadding="12dp"/>
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-</ScrollView>
+    </ScrollView>

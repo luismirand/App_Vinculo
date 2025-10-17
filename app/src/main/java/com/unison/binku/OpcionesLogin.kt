@@ -31,7 +31,6 @@ class OpcionesLogin : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         comprobarSesion()
 
-        // Inicializar ProgressDialog
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Por favor espere")
         progressDialog.setCanceledOnTouchOutside(false)
@@ -74,12 +73,16 @@ class OpcionesLogin : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener { resultadoAuth ->
-//                if (resultadoAuth.additionalUserInfo!!.isNewUser) {
+                // --- CORRECCIÓN IMPORTANTE ---
+                // Se restaura esta lógica para no sobrescribir los datos de un usuario existente.
+                if (resultadoAuth.additionalUserInfo!!.isNewUser) {
+                    // Si el usuario es nuevo, guardamos su información en la BD.
                     llenarInfoBD()
-//                } else {
-//                    startActivity(Intent(this, MainActivity::class.java))
-//                    finishAffinity()
-//                }
+                } else {
+                    // Si el usuario ya existe, lo mandamos directo a la pantalla principal.
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finishAffinity()
+                }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Fallo en la autenticación: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -87,19 +90,24 @@ class OpcionesLogin : AppCompatActivity() {
     }
 
     private fun llenarInfoBD() {
-        progressDialog.setMessage("Guardando información")
-        progressDialog.show() // Mostrar el diálogo antes de la operación
+        progressDialog.setMessage("Creando cuenta...")
+        progressDialog.show()
 
         val tiempo = Constantes.obtenerTiempoDis()
-        val emailUsuario = firebaseAuth.currentUser!!.email
-        val uidUsuario = firebaseAuth.uid
-        val nombreUsuario = firebaseAuth.currentUser!!.displayName
+        val currentUser = firebaseAuth.currentUser!!
+
+        val emailUsuario = currentUser.email
+        val uidUsuario = currentUser.uid
+        val nombreUsuario = currentUser.displayName
+        // --- CORRECCIÓN: Obtener la URL de la foto de perfil ---
+        val fotoUsuarioUrl = currentUser.photoUrl.toString()
 
         val hashMap = HashMap<String, Any?>()
         hashMap["nombres"] = "$nombreUsuario"
         hashMap["codigoTelefono"] = ""
         hashMap["telefono"] = ""
-        hashMap["urlImagenPerfil"] = ""
+        // --- CORRECCIÓN: Guardar la URL real ---
+        hashMap["urlImagenPerfil"] = fotoUsuarioUrl
         hashMap["proveedor"] = "Google"
         hashMap["escribiendo"] = ""
         hashMap["tiempo"] = tiempo
@@ -109,9 +117,10 @@ class OpcionesLogin : AppCompatActivity() {
         hashMap["fecha_nac"] = ""
 
         val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
-        ref.child(uidUsuario!!)
+        ref.child(uidUsuario)
             .setValue(hashMap)
             .addOnSuccessListener {
+
                 progressDialog.dismiss()
                 startActivity(Intent(this, MainActivity::class.java))
                 finishAffinity()
