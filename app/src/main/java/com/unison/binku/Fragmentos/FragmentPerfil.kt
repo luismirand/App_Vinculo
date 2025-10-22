@@ -91,11 +91,11 @@ class FragmentPerfil : Fragment() {
                     if (imagen.isNotEmpty() && imagen != "null") {
                         Glide.with(mContext)
                             .load(imagen)
-                            .placeholder(R.drawable.ic_perfil) // Placeholder mientras carga
+                            .placeholder(R.drawable.ic_login)// Placeholder mientras carga
                             .into(binding.TvPerfil) // Asegúrate que TvPerfil sea un ImageView
                     } else {
                         // Si no hay imagen, poner el placeholder directamente
-                        binding.TvPerfil.setImageResource(R.drawable.ic_perfil)
+                        binding.TvPerfil.setImageResource(R.drawable.ic_login)
                     }
                 } catch (e: Exception){
                     Toast.makeText(mContext, "${e.message}", Toast.LENGTH_SHORT).show()
