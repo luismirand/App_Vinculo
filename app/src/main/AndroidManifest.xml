@@ -2,7 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-configuration android:name="android.permission.INTERNET" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -12,7 +19,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_binku_app"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompraYVenta">
+        android:theme="@style/Theme.AppCompraYVenta"> <!-- Theme corrected -->
+
+        <!-- Actividades declaradas -->
+        <activity
+            android:name=".CrearPostActivity"
+            android:exported="false" />
         <activity
             android:name=".EditarPerfil"
             android:exported="false" />
@@ -22,24 +34,22 @@
         <activity
             android:name=".Opciones_Login.Login_email"
             android:exported="false" />
+
+        <!-- Punto de entrada principal (Correcto) -->
         <activity
             android:name=".OpcionesLogin"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- CORREGIDO: Eliminado el intent-filter innecesario -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

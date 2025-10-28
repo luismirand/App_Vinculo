@@ -26,22 +26,28 @@ class MainActivity : AppCompatActivity() {
         // El fragmento inicial sigue siendo el Feed
         verFragmentoFeed()
 
-        // Tu código original para la navegación no ha cambiado
+        // Listener para la barra de navegación inferior
         binding.BottomNV.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.Item_Feed->{
+                R.id.Item_Feed -> {
                     verFragmentoFeed()
                     true
                 }
-                R.id.Item_Videos->{
+                R.id.Item_Videos -> {
                     verFragmentoVideos()
                     true
                 }
-                R.id.Item_Notificaciones->{
+                R.id.Item_Publicar -> {
+                    // Acción para el ítem de menú "Publicar"
+                    val fragmentFeed = supportFragmentManager.findFragmentByTag("FragmentFeed") as? FragmentFeed
+                    fragmentFeed?.lanzarCrearPost()
+                    false // No seleccionar este ítem
+                }
+                R.id.Item_Notificaciones -> {
                     verFragmentoNotificaciones()
                     true
                 }
-                R.id.Item_Perfil->{
+                R.id.Item_Perfil -> {
                     verFragmentoPerfil()
                     true
                 }
@@ -50,7 +56,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
+
+        // Listener para el Botón Flotante (FAB)
+        binding.FAB.setOnClickListener {
+            // Hacemos exactamente lo mismo que con el ítem de menú "Publicar"
+            val fragmentFeed = supportFragmentManager.findFragmentByTag("FragmentFeed") as? FragmentFeed
+            fragmentFeed?.lanzarCrearPost()
+            // Aquí no necesitamos devolver true/false
+        }
+    } // Fin de onCreate
 
     // Nueva función para verificar si el usuario ha iniciado sesión
     private fun comprobarSesion() {
@@ -60,11 +74,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Tus funciones originales para mostrar los fragmentos no han cambiado
     private fun verFragmentoFeed(){
         binding.TituloRL.text="Feed"
         val fragment = FragmentFeed()
         val fragmentTransition = supportFragmentManager.beginTransaction()
+        // Asegúrate de que el tag sea consistente
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentFeed")
         fragmentTransition.commit()
     }
@@ -79,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun verFragmentoNotificaciones(){
         binding.TituloRL.text="Notificaciones"
-       val fragment = FragmentNotificaciones()
+        val fragment = FragmentNotificaciones()
         val fragmentTransition = supportFragmentManager.beginTransaction()
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentNotificaciones")
         fragmentTransition.commit()
@@ -93,3 +107,4 @@ class MainActivity : AppCompatActivity() {
         fragmentTransition.commit()
     }
 }
+

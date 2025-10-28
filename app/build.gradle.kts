@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.firebaseDatabase)
     implementation(libs.loginGoogle)
     implementation(libs.glide)
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation(libs.ccp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
