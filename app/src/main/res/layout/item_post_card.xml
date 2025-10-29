@@ -18,11 +18,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- 1. Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp">
 
+            <!-- Author Avatar -->
             <ImageView
                 android:id="@+id/iv_user_avatar"
                 android:layout_width="48dp"
@@ -37,7 +42,8 @@
                 android:orientation="vertical"
                 android:layout_toEndOf="@id/iv_user_avatar"
                 android:layout_marginStart="16dp"
-                android:layout_centerVertical="true">
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/btn_delete_post">
 
                 <TextView
                     android:id="@+id/tv_user_name"
@@ -48,6 +54,15 @@
                     android:textSize="16sp"
                     android:textColor="@android:color/black"/>
 
+                <!-- Location TextView -->
+                <TextView
+                    android:id="@+id/tv_post_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="en Hermosillo, Sonora"
+                    android:textSize="12sp"
+                    android:visibility="gone"/> <!-- Initially hidden -->
+
                 <TextView
                     android:id="@+id/tv_post_time"
                     android:layout_width="wrap_content"
@@ -55,8 +70,23 @@
                     tools:text="hace 1 hora"
                     android:textSize="12sp"/>
             </LinearLayout>
+
+            <!-- Delete Post Button -->
+            <ImageButton
+                android:id="@+id/btn_delete_post"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@android:color/darker_gray"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                android:contentDescription="Borrar post"/>
+
         </RelativeLayout>
 
+        <!-- 2. Body -->
         <TextView
             android:id="@+id/tv_post_content"
             android:layout_width="match_parent"
@@ -80,33 +110,48 @@
             android:visibility="gone"
             android:contentDescription="Imagen de la publicación"/>
 
+        <!-- 3. Footer (Actions) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
 
+            <!-- Like Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_like"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_like"
-                app:iconTint="@android:color/darker_gray"
+                app:iconTint="@color/black"
                 tools:ignore="SpeakableTextPresentCheck" />
 
+            <!-- Like Counter -->
+            <TextView
+                android:id="@+id/tv_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textSize="14sp"
+                tools:text="0" />
+
+            <!-- Comment Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_comment"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 app:icon="@drawable/ic_comment"
                 app:iconTint="@android:color/darker_gray"
+
                 tools:ignore="SpeakableTextPresentCheck" />
+
 
         </LinearLayout>
     </LinearLayout>

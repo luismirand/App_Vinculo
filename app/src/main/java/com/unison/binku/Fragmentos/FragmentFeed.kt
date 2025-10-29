@@ -15,18 +15,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.unison.binku.Adaptadores.AdaptadorPost // Asegúrate que el paquete sea correcto
+import com.unison.binku.Adaptadores.AdaptadorPost
 import com.unison.binku.CrearPostActivity
 import com.unison.binku.ViewModels.FeedViewModel
 import com.unison.binku.databinding.FragmentFeedBinding
-import java.util.UUID
 
 class FragmentFeed : Fragment() {
 
     private lateinit var binding: FragmentFeedBinding
     private lateinit var mContext: Context
     private lateinit var adaptadorPost: AdaptadorPost
-    private lateinit var firebaseAuth: FirebaseAuth // Añadido para obtener datos del usuario
+    private lateinit var firebaseAuth: FirebaseAuth
 
     private val feedViewModel: FeedViewModel by viewModels()
 
@@ -34,18 +33,20 @@ class FragmentFeed : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            Log.d("FragmentFeed", "Resultado OK recibido de CrearPostActivity")
+            Log.d("FragmentFeed", "Result OK received from CrearPostActivity")
             val data = result.data
             val postText = data?.getStringExtra("POST_TEXT") ?: ""
             val imageUriString = data?.getStringExtra("POST_IMAGE_URI")
+            val postLocation = data?.getStringExtra("POST_LOCATION") ?: "" // Get location
 
             if (postText.isNotEmpty()) {
-                // TODO: Handle image upload before saving if imageUriString is not null
-                feedViewModel.agregarPostFirebase(postText, imageUriString)
+                // TODO: Implement image upload to Firebase Storage if imageUriString is not null
+                // For now, pass local URI and location to ViewModel
+                feedViewModel.agregarPostFirebase(postText, imageUriString, postLocation) // Pass location
                 Toast.makeText(mContext, "Publicando...", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Log.d("FragmentFeed", "Resultado NO OK recibido de CrearPostActivity (Código: ${result.resultCode})")
+            Log.d("FragmentFeed", "Result NOT OK received (Code: ${result.resultCode})")
         }
     }
 
@@ -59,36 +60,47 @@ class FragmentFeed : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFeedBinding.inflate(inflater, container, false)
-        firebaseAuth = FirebaseAuth.getInstance() // Inicializar FirebaseAuth
-        adaptadorPost = AdaptadorPost(mContext, ArrayList())
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        adaptadorPost = AdaptadorPost(
+            context = mContext,
+            postList = ArrayList(),
+            onDeleteClick = { postIdToDelete -> // Lambda para borrar
+                feedViewModel.eliminarPostFirebase(postIdToDelete)
+            },
+            onLikeClick = { postIdToLike -> // Lambda para like
+                feedViewModel.toggleLikePost(postIdToLike)
+            }
+        )
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Setup RecyclerView
         binding.rvPosts.layoutManager = LinearLayoutManager(mContext)
-        binding.rvPosts.adapter = adaptadorPost
+        binding.rvPosts.adapter = adaptadorPost // Assign initialized adapter
 
-        // --- EL LISTENER DEL FAB HA SIDO REMOVIDO CORRECTAMENTE ---
-
+        // Observe LiveData from ViewModel
         feedViewModel.posts.observe(viewLifecycleOwner, Observer { posts ->
-            adaptadorPost.updatePosts(posts)
-            actualizarVistaFeed(posts.isEmpty())
+            Log.d("FragmentFeed", "LiveData observed changes, updating adapter with ${posts.size} posts.")
+            adaptadorPost.updatePosts(posts) // Update adapter's list
+            actualizarVistaFeed(posts.isEmpty()) // Update placeholder visibility
         })
     }
 
-    // --- >>> FUNCIÓN AÑADIDA <<< ---
+    // Public function called by MainActivity
     fun lanzarCrearPost() {
-        Log.d("FragmentFeed", "lanzarCrearPost llamado desde MainActivity!") // Log para confirmar
+        Log.d("FragmentFeed", "lanzarCrearPost called!")
         val intent = Intent(mContext, CrearPostActivity::class.java)
-        // Usamos el launcher que ya tienes definido para esperar el resultado
         crearPostLauncher.launch(intent)
     }
-    // --- >>> FIN DE LA FUNCIÓN AÑADIDA <<< ---
 
-
+    // Function to show/hide placeholder
     private fun actualizarVistaFeed(isEmpty: Boolean) {
+        Log.d("FragmentFeed", "Updating feed view, isEmpty: $isEmpty")
         if (isEmpty) {
             binding.placeholderContainer.visibility = View.VISIBLE
             binding.rvPosts.visibility = View.GONE
@@ -98,4 +110,3 @@ class FragmentFeed : Fragment() {
         }
     }
 }
-

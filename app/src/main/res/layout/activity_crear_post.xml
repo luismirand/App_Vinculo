@@ -18,7 +18,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="20dp"/>
 
-    <!-- Campo para escribir el texto del post -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_post_text"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -41,13 +40,50 @@
             android:inputType="textMultiLine|textCapSentences"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Contenedor para la imagen seleccionada y el botón -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_post_location"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxStrokeColor="#800020"
+            app:hintTextColor="#800020"
+            app:startIconDrawable="@drawable/ic_location"> <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_post_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="¿Dónde estás? (Opcional)"
+            android:inputType="textCapWords"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btn_get_location"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_my_location"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="#800020"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Obtener ubicación actual"/>
+
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp">
 
-        <!-- Vista previa de la imagen seleccionada -->
         <ImageView
             android:id="@+id/iv_post_image_preview"
             android:layout_width="100dp"
@@ -58,7 +94,6 @@
             android:layout_alignParentStart="true"
             android:contentDescription="Vista previa de la imagen"/>
 
-        <!-- Botón para quitar la imagen seleccionada -->
         <ImageButton
             android:id="@+id/btn_remove_image"
             android:layout_width="32dp"
@@ -74,7 +109,6 @@
             android:contentDescription="Quitar imagen"/>
 
 
-        <!-- Botón para seleccionar imagen -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_select_image"
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
@@ -89,7 +123,6 @@
 
     </RelativeLayout>
 
-    <!-- Botón para publicar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_publish_post"
         android:layout_width="match_parent"

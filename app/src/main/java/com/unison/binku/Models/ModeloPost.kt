@@ -1,11 +1,18 @@
 package com.unison.binku.Models
 
-// Data class para representar una publicación
 data class ModeloPost(
-    var postId: String = "",         // ID único del post
-    var uidAutor: String = "",       // ID del usuario que lo creó
-    var nombreAutor: String = "",    // Nombre del usuario que lo creó
-    var textoPost: String = "",      // El contenido de texto del post
-    var imagenUrlPost: String = "",  // URL de la imagen (si la hay)
-    var timestamp: Long = 0          // Marca de tiempo de creación
-)
+    var postId: String = "",
+    var uidAutor: String = "",
+    var nombreAutor: String = "",
+    var textoPost: String = "",
+    var imagenUrlPost: String = "",
+    var timestamp: Long = 0,
+    var ubicacion: String = "",
+    var contadorLikes: Int = 0,               // Para mostrar el número de likes
+    var urlAvatarAutor: String = "",          // URL de la foto de perfil del autor
+    @field:JvmField // Necesario para que Firebase pueda mapear 'isLiked'
+    var isLikedPorUsuarioActual: Boolean = false // Indica si el usuario actual le dio like (se calcula localmente)
+) {
+    // Constructor sin argumentos requerido por Firebase
+    constructor() : this("", "", "", "", "", 0, "", 0, "", false)
+}

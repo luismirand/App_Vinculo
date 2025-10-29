@@ -1,15 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
 
+    <!-- Nombre base del tema (puede ser diferente en tu proyecto, ej: Base.Theme.BinkuApp) -->
+    <style name="Base.Theme.AppCompraYVenta" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores primarios (ya los tenías) -->
+        <item name="colorPrimary">@color/guinda</item>
+        <item name="colorPrimaryVariant">@color/guinda</item> <!-- Usado para la barra de estado -->
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Otros colores (puedes personalizarlos) -->
+        <item name="colorOnSecondary">@color/black</item>
 
+        <!-- 1. Establece el color de fondo de la barra de estado -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- 2. Indica que los iconos/texto sobre la barra deben ser claros (blancos) -->
+        <item name="android:windowLightStatusBar">false</item>
+
+         <item name="android:colorBackground">@color/background</item>
+
+    </style>
+
+    <!-- Tema principal que hereda del base -->
     <style name="Theme.AppCompraYVenta" parent="Base.Theme.AppCompraYVenta" />
 
-    <style name="Base.Theme.AppCompraYVenta" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/guinda</item>
-        <item name="colorPrimaryVariant">@color/guinda</item>
-        <item name="colorOnPrimary">@color/white</item>
-    </style>
+    <!-- Estilo para el indicador de la barra de navegación (ya lo tenías) -->
     <style name="App.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/guinda_ripple</item>
     </style>
+
 </resources>
+

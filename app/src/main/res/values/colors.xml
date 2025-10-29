@@ -7,5 +7,6 @@
     <color name="rosa">#F2C1C6</color>
     <color name="background">#F8F5F2</color>
     <color name="text">#333333</color>
+    <color name="gris_oscuro">#FF666666</color>
     
 </resources>
