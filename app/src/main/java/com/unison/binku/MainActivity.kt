@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun verFragmentoNotificaciones(){
-        binding.TituloRL.text="Notificaciones"
+        binding.TituloRL.text="Amigos"
         val fragment = FragmentNotificaciones()
         val fragmentTransition = supportFragmentManager.beginTransaction()
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentNotificaciones")
