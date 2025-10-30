@@ -1,4 +1,4 @@
-package com.unison.binku.ViewModels // Or your correct package name
+package com.unison.binku.ViewModels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.unison.binku.Models.ModeloPost // Ensure correct import
+import com.unison.binku.Models.ModeloPost
 
 class FeedViewModel : ViewModel() {
 
@@ -29,9 +29,9 @@ class FeedViewModel : ViewModel() {
                     if (post != null) {
                         post.postId = ds.key ?: ""
                         post.contadorLikes = ds.child("contadorLikes").getValue(Int::class.java) ?: 0
-                        // --- OBTENER URL AVATAR GUARDADA ---
+
                         post.urlAvatarAutor = ds.child("urlAvatarAutor").getValue(String::class.java) ?: ""
-                        // --- FIN ---
+
                         if (currentUserId != null) {
                             post.isLikedPorUsuarioActual = ds.child("Likes").hasChild(currentUserId)
                         } else {
@@ -58,18 +58,11 @@ class FeedViewModel : ViewModel() {
         cargarPostsDesdeFirebase()
     }
 
-    /**
-     * Toggles the like status for a given post using a Firebase Transaction.
-     */
     fun toggleLikePost(postId: String) {
-        // ... (Transaction logic remains the same) ...
+
     }
 
 
-    /**
-     * Adds a new post to Firebase Database under the "Posts" node,
-     * including the author's current avatar URL.
-     */
     fun agregarPostFirebase(postText: String, imageUriString: String?, location: String) {
         val currentUser = firebaseAuth.currentUser ?: return
         val currentUserUid = currentUser.uid
@@ -111,19 +104,11 @@ class FeedViewModel : ViewModel() {
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("FeedViewModel", "Error fetching avatar URL for new post: ${error.message}")
-                    // Opcional: Podrías guardar el post sin avatar o mostrar un error
-                    // Por ahora, no se guardará el post si falla la lectura del avatar
-                    // O podrías llamar a una función para guardar SIN avatar aquí
-                    // guardarPostSinAvatar(postText, imageUriString, location, currentUser)
+
                 }
             })
-        // --- >>> FIN OBTENER AVATAR <<< ---
     }
 
-
-    /**
-     * Deletes a post from Firebase Database.
-     */
     fun eliminarPostFirebase(postId: String) {
         if (postId.isEmpty()) {
             Log.w("FeedViewModel", "Attempted to delete post with empty ID")

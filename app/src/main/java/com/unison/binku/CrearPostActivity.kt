@@ -36,7 +36,6 @@ class CrearPostActivity : AppCompatActivity() {
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
 
-    // --- LAUNCHERS ---
 
     // Launcher para el resultado de la Galería
     private val galeriaLauncher = registerForActivityResult(
@@ -46,7 +45,7 @@ class CrearPostActivity : AppCompatActivity() {
             imagenUri = uri
             mostrarVistaPreviaImagen()
         } else {
-            // Opcional: Toast.makeText(this, "Selección cancelada", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Selección cancelada", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -77,7 +76,7 @@ class CrearPostActivity : AppCompatActivity() {
             Toast.makeText(this, "Captura cancelada", Toast.LENGTH_SHORT).show()
             // Si canceló, la URI temporal podría quedar vacía, la limpiamos por si acaso
             if (imagenUri != null) {
-                // contentResolver.delete(imagenUri!!, null, null) // Opcional: borrar archivo temporal si cancela
+                contentResolver.delete(imagenUri!!, null, null)
                 imagenUri = null
             }
         }
@@ -95,7 +94,6 @@ class CrearPostActivity : AppCompatActivity() {
         }
     }
 
-    // --- LIFECYCLE ---
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +103,6 @@ class CrearPostActivity : AppCompatActivity() {
         // Inicializar servicios de ubicación
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // --- LISTENERS ---
         binding.btnSelectImage.setOnClickListener {
             mostrarOpcionesSeleccionImagen()
         }
@@ -122,8 +119,6 @@ class CrearPostActivity : AppCompatActivity() {
             publicarPost()
         }
     }
-
-    // --- FUNCIONES PARA MANEJAR IMAGEN ---
 
     private fun mostrarOpcionesSeleccionImagen() {
         val popupMenu = PopupMenu(this, binding.btnSelectImage)
@@ -173,13 +168,13 @@ class CrearPostActivity : AppCompatActivity() {
         }
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            putExtra(MediaStore.EXTRA_OUTPUT, imagenUri) // Indicar dónde guardar
+            putExtra(MediaStore.EXTRA_OUTPUT, imagenUri)
         }
         cameraActivityResultLauncher.launch(intent)
     }
 
     private fun abrirGaleria() {
-        galeriaLauncher.launch("image/*") // Lanza el launcher de galería
+        galeriaLauncher.launch("image/*")
     }
 
     private fun mostrarVistaPreviaImagen() {
@@ -200,7 +195,6 @@ class CrearPostActivity : AppCompatActivity() {
     }
 
 
-    // --- FUNCIONES PARA MANEJAR UBICACIÓN ---
 
     private fun solicitarPermisoUbicacion() {
         when {
@@ -223,9 +217,8 @@ class CrearPostActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission") // La verificación se hace en solicitarPermisoUbicacion
+    @SuppressLint("MissingPermission")
     private fun obtenerUbicacionActual() {
-        // Doble verificación por seguridad
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this,"Concede permisos de ubicación primero", Toast.LENGTH_SHORT).show()
@@ -280,8 +273,7 @@ class CrearPostActivity : AppCompatActivity() {
             binding.etPostLocation.setText("$latitude, $longitude") // Mostrar coords si falla geocoding
         }
     }
-
-    // --- FUNCIÓN FINAL PARA PUBLICAR ---
+    
 
     private fun publicarPost() {
         val postText = binding.etPostText.text.toString().trim()
