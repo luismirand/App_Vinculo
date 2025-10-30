@@ -64,7 +64,7 @@ class OpcionesLogin : AppCompatActivity() {
                 val cuenta = task.getResult(ApiException::class.java)
                 autenticacionGoogle(cuenta.idToken)
             } catch (e: ApiException) {
-                Toast.makeText(this, "Fallo en el inicio de sesión: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -73,13 +73,9 @@ class OpcionesLogin : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener { resultadoAuth ->
-                // --- CORRECCIÓN IMPORTANTE ---
-                // Se restaura esta lógica para no sobrescribir los datos de un usuario existente.
                 if (resultadoAuth.additionalUserInfo!!.isNewUser) {
-                    // Si el usuario es nuevo, guardamos su información en la BD.
                     llenarInfoBD()
                 } else {
-                    // Si el usuario ya existe, lo mandamos directo a la pantalla principal.
                     startActivity(Intent(this, MainActivity::class.java))
                     finishAffinity()
                 }
@@ -99,14 +95,12 @@ class OpcionesLogin : AppCompatActivity() {
         val emailUsuario = currentUser.email
         val uidUsuario = currentUser.uid
         val nombreUsuario = currentUser.displayName
-        // --- CORRECCIÓN: Obtener la URL de la foto de perfil ---
         val fotoUsuarioUrl = currentUser.photoUrl.toString()
 
         val hashMap = HashMap<String, Any?>()
         hashMap["nombres"] = "$nombreUsuario"
         hashMap["codigoTelefono"] = ""
         hashMap["telefono"] = ""
-        // --- CORRECCIÓN: Guardar la URL real ---
         hashMap["urlImagenPerfil"] = fotoUsuarioUrl
         hashMap["proveedor"] = "Google"
         hashMap["escribiendo"] = ""
@@ -120,14 +114,13 @@ class OpcionesLogin : AppCompatActivity() {
         ref.child(uidUsuario)
             .setValue(hashMap)
             .addOnSuccessListener {
-
                 progressDialog.dismiss()
                 startActivity(Intent(this, MainActivity::class.java))
                 finishAffinity()
             }
             .addOnFailureListener { exception ->
                 progressDialog.dismiss()
-                Toast.makeText(this, "No se registró debido a ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "ERROR: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 

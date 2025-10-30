@@ -2,23 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/Item_Feed"
-        android:title="@string/Item_Inicio"
+        android:title="@string/Item_Feed"
         android:icon="@drawable/ic_feed" />
 
     <item android:id="@+id/Item_Videos"
-        android:title="@string/Item_Chats"
+        android:title="@string/Item_Videos"
         android:icon="@drawable/ic_videos"/>
 
     <item android:id="@+id/Item_Publicar"
-        android:title="@string/Item_Vender"
+        android:title="@string/Item_Publicar"
         android:enabled="true"/>
 
     <item android:id="@+id/Item_Notificaciones"
-        android:title="@string/Item_Mis_Anuncios"
-        android:icon="@drawable/ic_notificaciones"/>
+        android:title="@string/Item_Amigos"
+        android:icon="@drawable/ic_amigos"/>
 
     <item android:id="@+id/Item_Perfil"
-        android:title="@string/Item_Cuenta"
+        android:title="@string/Item_Perfil"
         android:icon="@drawable/ic_perfil"/>
 
 

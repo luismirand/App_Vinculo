@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Binku</string>
-    <string name="Item_Inicio">Feed</string>
-    <string name="Item_Chats">Videos</string>
-    <string name="Item_Vender">Publicar</string>
-    <string name="Item_Mis_Anuncios">Notificaciones</string>
-    <string name="Item_Cuenta">Perfil</string>">
+    <string name="Item_Feed">Feed</string>
+    <string name="Item_Videos">Videos</string>
+    <string name="Item_Publicar">Publicar</string>
+    <string name="Item_Amigos">Amigos</string>
+    <string name="Item_Perfil">Perfil</string>">
 
     <string name="TituloRL">Binku</string>
 
@@ -25,20 +25,20 @@
 
     <string name="default_web_client_id">25580175423-ekfukcl56sblajjonumkeuejh8ht1knu.apps.googleusercontent.com</string>
 
-    <!--    Perfil de usuario-->
-    <string name="Txt_perfil">Perfil de usuario</string>">
-    <string name="Txt_informacion">Información: </string>">
-    <string name="Txt_nombres">Nombres:</string>
+    <!--    Perfil de usuario (fragement_perfil.xml)-->
+    <string name="Txt_perfil">Mi Perfil</string>">
+    <string name="Txt_informacion">Información</string>">
+    <string name="Txt_nombres">Nombre</string>
     <string name="Tv_nombres">Nombres completos</string>
-    <string name="Txt_email">Email: </string>
+    <string name="Txt_email">Correo electronico</string>
     <string name="Tv_email">email@dominio.com</string>
-    <string name="Txt_nacimiento">Fecha de nac: </string>
+    <string name="Txt_nacimiento">Fecha de nacimiento</string>
     <string name="Tv_nacimiento"> DD/MM/AAAA</string>
-    <string name="Txt_miembro">Miembro desde: </string>
+    <string name="Txt_miembro">Miembro desde</string>
     <string name="Tv_miembro"> DD/MM/AAAA</string>
-    <string name="Txt_telefono">Teléfono: </string>
+    <string name="Txt_telefono">Teléfono</string>
     <string name="Tv_telefono">9802375082</string>
-    <string name="Txt_estado_cuenta">Estado de cuenta: </string>">
+    <string name="Txt_estado_cuenta">Estado de cuenta </string>">
     <string name="Tv_estado_cuenta">No verificado</string>
 
     <string name="TxtOpciones">Opciones</string>
@@ -46,7 +46,7 @@
     <string name="Btn_cerrar_sesion">Cerrar Sesión</string>
 
     <string name="Txt_editar_perfil">Editar Perfil</string>
-    <string name="Et_nombres">Nombres completos</string>
+    <string name="Et_nombres">Nombre completo</string>
     <string name="Et_f_nac">Fecha de nac.</string>
     <string name="Cod_tef">+00</string>
     <string name="Et_telefono">Teléfono</string>
