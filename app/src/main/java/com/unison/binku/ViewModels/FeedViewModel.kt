@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.unison.binku.Models.ModeloPost
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
 
 class FeedViewModel : ViewModel() {
 
@@ -32,6 +34,8 @@ class FeedViewModel : ViewModel() {
 
                         post.urlAvatarAutor = ds.child("urlAvatarAutor").getValue(String::class.java) ?: ""
 
+                        // --- Esta lógica es la clave ---
+                        // Revisa si el ID del usuario actual está en la lista de "Likes"
                         if (currentUserId != null) {
                             post.isLikedPorUsuarioActual = ds.child("Likes").hasChild(currentUserId)
                         } else {
@@ -59,7 +63,49 @@ class FeedViewModel : ViewModel() {
     }
 
     fun toggleLikePost(postId: String) {
+        val currentUserId = firebaseAuth.currentUser?.uid ?: return // No hacer nada si no hay usuario
+        val postRef = postsRef.child(postId)
 
+        postRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                // 1. Obtener el estado actual del post
+                val post = mutableData.getValue(ModeloPost::class.java)
+                    ?: return Transaction.success(mutableData) // El post fue borrado, abortar.
+
+                // 2. Revisar si el usuario ya dio like
+                val likesNode = mutableData.child("Likes")
+                val isLiked = likesNode.hasChild(currentUserId)
+
+                // 3. Aplicar la lógica
+                if (isLiked) {
+                    // QUITAR LIKE
+                    post.contadorLikes = (post.contadorLikes - 1).coerceAtLeast(0) // Restar 1, mínimo 0
+                    likesNode.child(currentUserId).value = null // Borrar el ID del usuario de "Likes"
+                } else {
+                    // DAR LIKE
+                    post.contadorLikes = post.contadorLikes + 1 // Sumar 1
+                    likesNode.child(currentUserId).value = true // Añadir el ID del usuario a "Likes"
+                }
+
+                // 4. Actualizar el contador en la raíz del post
+                mutableData.child("contadorLikes").value = post.contadorLikes
+
+                // 5. Devolver los datos modificados para que se guarden
+                return Transaction.success(mutableData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                currentData: DataSnapshot?
+            ) {
+                if (error != null) {
+                    Log.e("FeedViewModel", "Error en transacción de like: ${error.message}")
+                } else {
+                    Log.d("FeedViewModel", "Like/Unlike exitoso")
+                }
+            }
+        })
     }
 
 
@@ -82,8 +128,8 @@ class FeedViewModel : ViewModel() {
                         timestamp = System.currentTimeMillis(),
                         ubicacion = location,
                         contadorLikes = 0,
-                        urlAvatarAutor = avatarUrl // <-- Guardar la URL del avatar
-                        // isLiked is calculated locally
+                        urlAvatarAutor = avatarUrl
+
                     )
 
                     // Generate unique ID using push()
