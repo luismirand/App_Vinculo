@@ -1,18 +1,61 @@
 package com.unison.binku
 
+// --- >>> AÑADIR ESTOS IMPORTS <<< ---
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels // <-- Importante, de 'activity'
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.unison.binku.Fragmentos.FragmentFeed
 import com.unison.binku.Fragmentos.FragmentNotificaciones
 import com.unison.binku.Fragmentos.FragmentPerfil
 import com.unison.binku.Fragmentos.FragmentVideos
+import com.unison.binku.ViewModels.FeedViewModel // <-- Importar el ViewModel
 import com.unison.binku.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
+
+    // --- >>> CÓDIGO NUEVO AÑADIDO <<< ---
+
+    // 1. ViewModel "Scoped" (ligado) a esta Activity
+    private val feedViewModel: FeedViewModel by viewModels()
+
+    // 2. Activity Result Launcher (movido desde FragmentFeed)
+    private val crearPostLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("MainActivity", "Result OK recibido de CrearPostActivity")
+            val data = result.data
+            val postText = data?.getStringExtra("POST_TEXT") ?: ""
+            val imageUriString = data?.getStringExtra("POST_IMAGE_URI")
+            val postLocation = data?.getStringExtra("POST_LOCATION") ?: ""
+
+            if (postText.isNotEmpty()) {
+                // Llamar al ViewModel de la Activity
+                feedViewModel.agregarPostFirebase(postText, imageUriString, postLocation)
+                Toast.makeText(this, "Publicando...", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.d("MainActivity", "Result NOT OK recibido (Code: ${result.resultCode})")
+        }
+    }
+
+    // 3. Función de lanzamiento (ahora pertenece a la Activity)
+    private fun lanzarCrearPost() {
+        Log.d("MainActivity", "lanzarCrearPost called!")
+        val intent = Intent(this, CrearPostActivity::class.java) // 'this' es el Context
+        crearPostLauncher.launch(intent)
+    }
+
+    // --- >>> FIN DEL CÓDIGO NUEVO <<< ---
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +80,13 @@ class MainActivity : AppCompatActivity() {
                     verFragmentoVideos()
                     true
                 }
+                // --- >>> CAMBIO DE LÓGICA <<< ---
                 R.id.Item_Publicar -> {
-                    // Acción para el ítem de menú "Publicar"
-                    val fragmentFeed = supportFragmentManager.findFragmentByTag("FragmentFeed") as? FragmentFeed
-                    fragmentFeed?.lanzarCrearPost()
+                    // Ahora llama a la función de esta Activity
+                    lanzarCrearPost()
                     false // No seleccionar este ítem
                 }
+                // --- >>> FIN DEL CAMBIO <<< ---
                 R.id.Item_Notificaciones -> {
                     verFragmentoNotificaciones()
                     true
@@ -58,12 +102,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Listener para el Botón Flotante (FAB)
+        // --- >>> CAMBIO DE LÓGICA <<< ---
         binding.FAB.setOnClickListener {
-            // Hacemos exactamente lo mismo que con el ítem de menú "Publicar"
-            val fragmentFeed = supportFragmentManager.findFragmentByTag("FragmentFeed") as? FragmentFeed
-            fragmentFeed?.lanzarCrearPost()
-            // Aquí no necesitamos devolver true/false
+            // Ahora llama a la función de esta Activity
+            lanzarCrearPost()
         }
+        // --- >>> FIN DEL CAMBIO <<< ---
+
     } // Fin de onCreate
 
     // Nueva función para verificar si el usuario ha iniciado sesión
@@ -107,4 +152,3 @@ class MainActivity : AppCompatActivity() {
         fragmentTransition.commit()
     }
 }
-
