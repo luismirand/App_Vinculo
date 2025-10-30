@@ -13,7 +13,7 @@
         android:title="@string/Item_Publicar"
         android:enabled="true"/>
 
-    <item android:id="@+id/Item_Notificaciones"
+    <item android:id="@+id/Item_Amigos"
         android:title="@string/Item_Amigos"
         android:icon="@drawable/ic_amigos"/>
 

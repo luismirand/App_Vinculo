@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/ivAvatarUsuario"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_perfil"/>
+
+    <TextView
+    android:id="@+id/tvNombreUsuario"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="8dp"
+    android:text="Nombre de Usuario"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/btnAccionPrincipal"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Acción"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btnAccionRechazar"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:text="Rechazar"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

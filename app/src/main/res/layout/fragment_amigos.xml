@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Fragmentos.FragmentAmigos">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchViewUsuarios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:queryHint="Buscar usuarios por nombre..."
+        android:iconifiedByDefault="false" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvBusqueda"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:listitem="@layout/item_usuario" />
+
+    <LinearLayout
+        android:id="@+id/layoutListas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTituloSolicitudes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Solicitudes Pendientes"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSolicitudes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:listitem="@layout/item_usuario" />
+
+        <TextView
+            android:id="@+id/tvTituloAmigos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mis Amigos"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_margin="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAmigos"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/item_usuario" />
+    </LinearLayout>
+
+</LinearLayout>

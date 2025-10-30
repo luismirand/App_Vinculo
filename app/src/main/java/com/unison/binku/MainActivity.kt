@@ -1,27 +1,24 @@
 package com.unison.binku
 
-// --- >>> AÑADIR ESTOS IMPORTS <<< ---
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels // <-- Importante, de 'activity'
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.unison.binku.Fragmentos.FragmentAmigos
 import com.unison.binku.Fragmentos.FragmentFeed
-import com.unison.binku.Fragmentos.FragmentNotificaciones
 import com.unison.binku.Fragmentos.FragmentPerfil
 import com.unison.binku.Fragmentos.FragmentVideos
-import com.unison.binku.ViewModels.FeedViewModel // <-- Importar el ViewModel
+import com.unison.binku.ViewModels.FeedViewModel
 import com.unison.binku.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
-
-    // --- >>> CÓDIGO NUEVO AÑADIDO <<< ---
 
     // 1. ViewModel "Scoped" (ligado) a esta Activity
     private val feedViewModel: FeedViewModel by viewModels()
@@ -54,8 +51,6 @@ class MainActivity : AppCompatActivity() {
         crearPostLauncher.launch(intent)
     }
 
-    // --- >>> FIN DEL CÓDIGO NUEVO <<< ---
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,17 +75,16 @@ class MainActivity : AppCompatActivity() {
                     verFragmentoVideos()
                     true
                 }
-                // --- >>> CAMBIO DE LÓGICA <<< ---
                 R.id.Item_Publicar -> {
-                    // Ahora llama a la función de esta Activity
                     lanzarCrearPost()
-                    false // No seleccionar este ítem
+                    false
                 }
-                // --- >>> FIN DEL CAMBIO <<< ---
-                R.id.Item_Notificaciones -> {
-                    verFragmentoNotificaciones()
+
+                R.id.Item_Amigos -> {
+                    verFragmentoAmigos()
                     true
                 }
+
                 R.id.Item_Perfil -> {
                     verFragmentoPerfil()
                     true
@@ -101,17 +95,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Listener para el Botón Flotante (FAB)
-        // --- >>> CAMBIO DE LÓGICA <<< ---
         binding.FAB.setOnClickListener {
-            // Ahora llama a la función de esta Activity
             lanzarCrearPost()
         }
-        // --- >>> FIN DEL CAMBIO <<< ---
 
-    } // Fin de onCreate
+    }
 
-    // Nueva función para verificar si el usuario ha iniciado sesión
+
     private fun comprobarSesion() {
         if (firebaseAuth.currentUser == null){
             startActivity(Intent(this, OpcionesLogin::class.java))
@@ -123,7 +113,6 @@ class MainActivity : AppCompatActivity() {
         binding.TituloRL.text="Feed"
         val fragment = FragmentFeed()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        // Asegúrate de que el tag sea consistente
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentFeed")
         fragmentTransition.commit()
     }
@@ -136,11 +125,11 @@ class MainActivity : AppCompatActivity() {
         fragmentTransition.commit()
     }
 
-    private fun verFragmentoNotificaciones(){
+    private fun verFragmentoAmigos(){
         binding.TituloRL.text="Amigos"
-        val fragment = FragmentNotificaciones()
+        val fragment = FragmentAmigos()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentNotificaciones")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentAmigos")
         fragmentTransition.commit()
     }
 
