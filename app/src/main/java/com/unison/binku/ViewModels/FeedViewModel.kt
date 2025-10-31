@@ -1,5 +1,6 @@
 package com.unison.binku.ViewModels
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import com.google.firebase.database.*
 import com.unison.binku.Models.ModeloPost
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
+import com.google.firebase.storage.FirebaseStorage
 
 class FeedViewModel : ViewModel() {
 
@@ -17,11 +19,11 @@ class FeedViewModel : ViewModel() {
 
     // Firebase references
     private val postsRef = FirebaseDatabase.getInstance().getReference("Posts")
-    private val usuariosRef = FirebaseDatabase.getInstance().getReference("Usuarios") // Reference to Users node
+    private val usuariosRef = FirebaseDatabase.getInstance().getReference("Usuarios")
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val currentUserId = firebaseAuth.currentUser?.uid
 
-    // Real-time listener for changes in the "Posts" node
+    // Listener en tiempo real
     private val postListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             val tempList = ArrayList<ModeloPost>()
@@ -31,11 +33,7 @@ class FeedViewModel : ViewModel() {
                     if (post != null) {
                         post.postId = ds.key ?: ""
                         post.contadorLikes = ds.child("contadorLikes").getValue(Int::class.java) ?: 0
-
                         post.urlAvatarAutor = ds.child("urlAvatarAutor").getValue(String::class.java) ?: ""
-
-                        // --- Esta lógica es la clave ---
-                        // Revisa si el ID del usuario actual está en la lista de "Likes"
                         if (currentUserId != null) {
                             post.isLikedPorUsuarioActual = ds.child("Likes").hasChild(currentUserId)
                         } else {
@@ -63,34 +61,26 @@ class FeedViewModel : ViewModel() {
     }
 
     fun toggleLikePost(postId: String) {
-        val currentUserId = firebaseAuth.currentUser?.uid ?: return // No hacer nada si no hay usuario
+        val currentUserId = firebaseAuth.currentUser?.uid ?: return
         val postRef = postsRef.child(postId)
 
         postRef.runTransaction(object : Transaction.Handler {
             override fun doTransaction(mutableData: MutableData): Transaction.Result {
-                // 1. Obtener el estado actual del post
                 val post = mutableData.getValue(ModeloPost::class.java)
-                    ?: return Transaction.success(mutableData) // El post fue borrado, abortar.
+                    ?: return Transaction.success(mutableData)
 
-                // 2. Revisar si el usuario ya dio like
                 val likesNode = mutableData.child("Likes")
                 val isLiked = likesNode.hasChild(currentUserId)
 
-                // 3. Aplicar la lógica
                 if (isLiked) {
-                    // QUITAR LIKE
-                    post.contadorLikes = (post.contadorLikes - 1).coerceAtLeast(0) // Restar 1, mínimo 0
-                    likesNode.child(currentUserId).value = null // Borrar el ID del usuario de "Likes"
+                    post.contadorLikes = (post.contadorLikes - 1).coerceAtLeast(0)
+                    likesNode.child(currentUserId).value = null
                 } else {
-                    // DAR LIKE
-                    post.contadorLikes = post.contadorLikes + 1 // Sumar 1
-                    likesNode.child(currentUserId).value = true // Añadir el ID del usuario a "Likes"
+                    post.contadorLikes = post.contadorLikes + 1
+                    likesNode.child(currentUserId).value = true
                 }
 
-                // 4. Actualizar el contador en la raíz del post
                 mutableData.child("contadorLikes").value = post.contadorLikes
-
-                // 5. Devolver los datos modificados para que se guarden
                 return Transaction.success(mutableData)
             }
 
@@ -101,60 +91,115 @@ class FeedViewModel : ViewModel() {
             ) {
                 if (error != null) {
                     Log.e("FeedViewModel", "Error en transacción de like: ${error.message}")
-                } else {
-                    Log.d("FeedViewModel", "Like/Unlike exitoso")
                 }
             }
         })
     }
 
-
+    /**
+     * Agrega un post. Si hay imagen y Storage está activo, sube y usa downloadUrl.
+     * Si falla (no hay Storage/permiso), GUARDA el post con la URI local (content://) como fallback.
+     */
     fun agregarPostFirebase(postText: String, imageUriString: String?, location: String) {
         val currentUser = firebaseAuth.currentUser ?: return
         val currentUserUid = currentUser.uid
 
-        // --- >>> OBTENER AVATAR URL ANTES DE GUARDAR <<< ---
-        usuariosRef.child(currentUserUid).child("urlImagenPerfil")
+        usuariosRef.child(currentUserUid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val avatarUrl = snapshot.getValue(String::class.java) ?: "" // Get avatar URL or empty
+                    val avatarUrl = snapshot.child("urlImagenPerfil").getValue(String::class.java) ?: ""
+                    val nombreUsuario = snapshot.child("nombres").getValue(String::class.java)?.takeIf { it.isNotBlank() }
+                        ?: (currentUser.displayName ?: "Usuario Binku")
 
-                    // Ahora crear y guardar el post con la URL obtenida
-                    val nuevoPost = ModeloPost(
-                        uidAutor = currentUserUid,
-                        nombreAutor = currentUser.displayName ?: "Usuario Binku",
-                        textoPost = postText,
-                        imagenUrlPost = imageUriString ?: "", // TODO: Replace with Storage URL
-                        timestamp = System.currentTimeMillis(),
-                        ubicacion = location,
-                        contadorLikes = 0,
-                        urlAvatarAutor = avatarUrl
-
-                    )
-
-                    // Generate unique ID using push()
                     val postId = postsRef.push().key
-                    if (postId != null) {
-                        // Save the complete post data
-                        postsRef.child(postId).setValue(nuevoPost)
+                    if (postId == null) {
+                        Log.e("FeedViewModel", "No se pudo generar postId")
+                        return
+                    }
+
+                    // 1) Sin imagen -> guardar directo
+                    if (imageUriString.isNullOrBlank()) {
+                        val post = ModeloPost(
+                            uidAutor = currentUserUid,
+                            nombreAutor = nombreUsuario,
+                            textoPost = postText,
+                            imagenUrlPost = "",
+                            timestamp = System.currentTimeMillis(),
+                            ubicacion = location,
+                            contadorLikes = 0,
+                            urlAvatarAutor = avatarUrl
+                        )
+                        guardarPost(postId, post)
+                        return
+                    }
+
+                    // 2) Con imagen -> intentar subir a Storage
+                    val localUri = Uri.parse(imageUriString)
+                    try {
+                        val storageRef = FirebaseStorage.getInstance()
+                            .getReference("PostImages/$currentUserUid/$postId.jpg")
+
+                        storageRef.putFile(localUri)
                             .addOnSuccessListener {
-                                Log.d("FeedViewModel", "Post added successfully with Avatar URL, ID: $postId")
+                                storageRef.downloadUrl
+                                    .addOnSuccessListener { downloadUri ->
+                                        val post = ModeloPost(
+                                            uidAutor = currentUserUid,
+                                            nombreAutor = nombreUsuario,
+                                            textoPost = postText,
+                                            imagenUrlPost = downloadUri.toString(), // URL pública
+                                            timestamp = System.currentTimeMillis(),
+                                            ubicacion = location,
+                                            contadorLikes = 0,
+                                            urlAvatarAutor = avatarUrl
+                                        )
+                                        guardarPost(postId, post)
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w("FeedViewModel", "No se pudo obtener downloadUrl, guardo URI local: ${e.message}")
+                                        guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
+                                    }
                             }
                             .addOnFailureListener { e ->
-                                Log.e("FeedViewModel", "Error adding post: ${e.message}")
+                                Log.w("FeedViewModel", "Fallo putFile en Storage, guardo URI local: ${e.message}")
+                                guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                             }
-                    } else {
-                        Log.e("FeedViewModel", "Could not generate unique post ID")
+                    } catch (e: Exception) {
+                        // Por ejemplo: Storage no configurado en el proyecto
+                        Log.w("FeedViewModel", "Storage no disponible, guardo URI local: ${e.message}")
+                        guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FeedViewModel", "Error fetching avatar URL for new post: ${error.message}")
-
+                    Log.e("FeedViewModel", "Error leyendo datos de usuario: ${error.message}")
                 }
             })
     }
 
+    private fun guardarPostConLocalUri(
+        postId: String,
+        uid: String,
+        nombre: String,
+        texto: String,
+        localUriString: String,
+        location: String,
+        avatarUrl: String
+    ) {
+        val post = ModeloPost(
+            uidAutor = uid,
+            nombreAutor = nombre,
+            textoPost = texto,
+            imagenUrlPost = localUriString, // content:// o file:// (solo visible localmente)
+            timestamp = System.currentTimeMillis(),
+            ubicacion = location,
+            contadorLikes = 0,
+            urlAvatarAutor = avatarUrl
+        )
+        guardarPost(postId, post)
+    }
+
+    /** <-- MÉTODO PÚBLICO USADO EN EL FRAGMENT */
     fun eliminarPostFirebase(postId: String) {
         if (postId.isEmpty()) {
             Log.w("FeedViewModel", "Attempted to delete post with empty ID")
@@ -169,17 +214,21 @@ class FeedViewModel : ViewModel() {
             }
     }
 
-    /**
-     * Starts listening for real-time updates on the "Posts" node in Firebase.
-     */
+    private fun guardarPost(postId: String, post: ModeloPost) {
+        postsRef.child(postId).setValue(post)
+            .addOnSuccessListener {
+                Log.d("FeedViewModel", "Post guardado OK (id=$postId)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("FeedViewModel", "Error guardando post: ${e.message}")
+            }
+    }
+
     private fun cargarPostsDesdeFirebase() {
         Log.d("FeedViewModel", "Starting Firebase post listener (orderByChild timestamp)")
         postsRef.orderByChild("timestamp").addValueEventListener(postListener)
     }
 
-    /**
-     * Called when the ViewModel is no longer used and will be destroyed.
-     */
     override fun onCleared() {
         super.onCleared()
         Log.d("FeedViewModel", "Stopping Firebase post listener")

@@ -1,4 +1,4 @@
-package com.unison.binku.Adaptadores // Or your correct package name
+package com.unison.binku.Adaptadores
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -11,16 +11,11 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.unison.binku.Constantes
-import com.unison.binku.Models.ModeloPost // Ensure correct import
+import com.unison.binku.Models.ModeloPost
 import com.unison.binku.R
 import com.unison.binku.databinding.ItemPostCardBinding
 
@@ -32,7 +27,6 @@ class AdaptadorPost(
 ) : RecyclerView.Adapter<AdaptadorPost.PostViewHolder>() {
 
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-    // Cache for avatars is removed as the URL comes with the post now
 
     inner class PostViewHolder(val binding: ItemPostCardBinding) : RecyclerView.ViewHolder(binding.root) {
         val btnDelete: ImageButton = binding.btnDeletePost
@@ -50,25 +44,22 @@ class AdaptadorPost(
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = postList[position]
 
-        // --- >>> CARGAR AVATAR DEL POST <<< ---
+        // Avatar
         try {
             if (post.urlAvatarAutor.isNotEmpty()) {
                 Glide.with(context)
                     .load(post.urlAvatarAutor)
-                    .placeholder(R.drawable.ic_perfil) // Placeholder while loading
-                    .error(R.drawable.ic_perfil) // Placeholder if error
-                    .circleCrop() // Make it circular
+                    .placeholder(R.drawable.ic_perfil)
+                    .error(R.drawable.ic_perfil)
+                    .circleCrop()
                     .into(holder.binding.ivUserAvatar)
             } else {
-                // If no avatar URL is stored with the post, show placeholder
                 holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil)
             }
         } catch (e: Exception) {
             Log.e("AdaptadorPost", "Error loading avatar: ${e.message}")
-            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil) // Fallback placeholder
+            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil)
         }
-        // --- >>> FIN <<< ---
-
 
         holder.binding.tvUserName.text = post.nombreAutor
         holder.binding.tvPostContent.text = post.textoPost
@@ -84,30 +75,38 @@ class AdaptadorPost(
             holder.tvLocation.setOnClickListener(null)
         }
 
+        // Imagen del post: soporta URL remota y content:// local
         if (post.imagenUrlPost.isNotEmpty()) {
             holder.binding.ivPostImage.visibility = View.VISIBLE
-            Glide.with(context)
-                .load(post.imagenUrlPost)
-                .placeholder(R.color.guinda_ripple)
-                .into(holder.binding.ivPostImage)
+            try {
+                Glide.with(context)
+                    .load(post.imagenUrlPost) // puede ser https:// o content://
+                    .placeholder(R.color.guinda_ripple)
+                    .into(holder.binding.ivPostImage)
+            } catch (e: Exception) {
+                // Fallback para content:// si Glide fallara por permisos
+                try {
+                    holder.binding.ivPostImage.setImageURI(Uri.parse(post.imagenUrlPost))
+                } catch (ie: Exception) {
+                    Log.e("AdaptadorPost", "Error mostrando imagen local: ${ie.message}")
+                }
+            }
         } else {
             holder.binding.ivPostImage.visibility = View.GONE
         }
 
-        // Like logic
+        // Likes
         holder.tvLikeCount.text = post.contadorLikes.toString()
         val likeIconColor = if (post.isLikedPorUsuarioActual) R.color.guinda else R.color.gris_oscuro
         holder.binding.btnLike.setIconTintResource(likeIconColor)
-        holder.binding.btnLike.setOnClickListener {
-            onLikeClick(post.postId)
-        }
+        holder.binding.btnLike.setOnClickListener { onLikeClick(post.postId) }
 
-        // Comment button listener (simple Toast for now)
+        // Comentarios (placeholder)
         holder.binding.btnComment.setOnClickListener {
             Toast.makeText(context, "Comentar post ${post.postId}", Toast.LENGTH_SHORT).show()
         }
 
-        // Delete button logic
+        // Borrar (solo autor)
         if (post.uidAutor == currentUserId) {
             holder.btnDelete.visibility = View.VISIBLE
             holder.btnDelete.setOnClickListener { onDeleteClick(post.postId) }
@@ -131,6 +130,6 @@ class AdaptadorPost(
 
     fun updatePosts(newPosts: ArrayList<ModeloPost>) {
         postList = newPosts
-        notifyDataSetChanged() // Consider DiffUtil for performance
+        notifyDataSetChanged()
     }
 }

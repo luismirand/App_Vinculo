@@ -13,8 +13,9 @@ googleServicesversion = "4.4.3"
 firebaseAuthV = "24.0.1"
 firebaseDatabaseV = "22.0.0"
 loginGoogleV = "21.4.0"
-glideV="5.0.5"
-ccpV="2.7.0"
+glideV = "5.0.5"
+ccpV = "2.7.0"
+firebaseStorageV = "21.0.0" # <-- agregado
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,14 +26,14 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-firebaseAuth = {group = "com.google.firebase", name= "firebase-auth", version.ref = "firebaseAuthV"}
-firebaseDatabase = {group = "com.google.firebase", name= "firebase-database", version.ref = "firebaseDatabaseV"}
-loginGoogle = {group = "com.google.android.gms", name= "play-services-auth", version.ref = "loginGoogleV"}
-glide={group = "com.github.bumptech.glide", name = "glide", version.ref = "glideV"}
-ccp = {group = "com.hbb20", name= "ccp", version.ref="ccpV"}
+firebaseAuth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuthV" }
+firebaseDatabase = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabaseV" }
+firebaseStorage = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageV" } # <-- agregado
+loginGoogle = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "loginGoogleV" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideV" }
+ccp = { group = "com.hbb20", name = "ccp", version.ref = "ccpV" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-googleService = {id = "com.google.gms.google-services", version.ref = "googleServicesversion"}
-
+googleService = { id = "com.google.gms.google-services", version.ref = "googleServicesversion" }

@@ -57,6 +57,8 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation(libs.ccp)
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation(libs.firebaseStorage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
