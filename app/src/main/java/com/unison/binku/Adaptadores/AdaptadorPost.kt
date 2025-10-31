@@ -65,6 +65,7 @@ class AdaptadorPost(
         holder.binding.tvPostContent.text = post.textoPost
         holder.binding.tvPostTime.text = Constantes.obtenerFecha(post.timestamp)
 
+        // Ubicación
         if (post.ubicacion.isNotEmpty()) {
             val locationText = "en ${post.ubicacion}"
             holder.tvLocation.text = locationText
@@ -75,22 +76,13 @@ class AdaptadorPost(
             holder.tvLocation.setOnClickListener(null)
         }
 
-        // Imagen del post: soporta URL remota y content:// local
+        // Imagen del post
         if (post.imagenUrlPost.isNotEmpty()) {
             holder.binding.ivPostImage.visibility = View.VISIBLE
-            try {
-                Glide.with(context)
-                    .load(post.imagenUrlPost) // puede ser https:// o content://
-                    .placeholder(R.color.guinda_ripple)
-                    .into(holder.binding.ivPostImage)
-            } catch (e: Exception) {
-                // Fallback para content:// si Glide fallara por permisos
-                try {
-                    holder.binding.ivPostImage.setImageURI(Uri.parse(post.imagenUrlPost))
-                } catch (ie: Exception) {
-                    Log.e("AdaptadorPost", "Error mostrando imagen local: ${ie.message}")
-                }
-            }
+            Glide.with(context)
+                .load(post.imagenUrlPost)
+                .placeholder(R.color.guinda_ripple)
+                .into(holder.binding.ivPostImage)
         } else {
             holder.binding.ivPostImage.visibility = View.GONE
         }
@@ -101,12 +93,23 @@ class AdaptadorPost(
         holder.binding.btnLike.setIconTintResource(likeIconColor)
         holder.binding.btnLike.setOnClickListener { onLikeClick(post.postId) }
 
-        // Comentarios (placeholder)
+        // Comentarios -> ABRIR ComentariosActivity con la CLAVE CORRECTA
         holder.binding.btnComment.setOnClickListener {
-            Toast.makeText(context, "Comentar post ${post.postId}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, com.unison.binku.ComentariosActivity::class.java).apply {
+                putExtra("POST_ID", post.postId)   // <- clave correcta
+                // Si quieres precargar el header sin consultar DB, puedes enviar opcionalmente:
+                putExtra("POST_NOMBRE", post.nombreAutor)
+                putExtra("POST_AVATAR", post.urlAvatarAutor)
+                putExtra("POST_TEXTO", post.textoPost)
+                putExtra("POST_IMAGEN", post.imagenUrlPost)
+                putExtra("POST_UBICACION", post.ubicacion)
+                putExtra("POST_TIMESTAMP", post.timestamp)
+                putExtra("POST_UID_AUTOR", post.uidAutor)
+            }
+            context.startActivity(intent)
         }
 
-        // Borrar (solo autor)
+        // Borrar
         if (post.uidAutor == currentUserId) {
             holder.btnDelete.visibility = View.VISIBLE
             holder.btnDelete.setOnClickListener { onDeleteClick(post.postId) }

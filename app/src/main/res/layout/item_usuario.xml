@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="12dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/ivAvatarUsuario"
@@ -14,16 +17,16 @@
         android:src="@drawable/ic_perfil"/>
 
     <TextView
-    android:id="@+id/tvNombreUsuario"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="8dp"
-    android:text="Nombre de Usuario"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    android:textColor="@android:color/black" />
+        android:id="@+id/tvNombreUsuario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="Nombre de Usuario"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black" />
 
     <Button
         android:id="@+id/btnAccionPrincipal"

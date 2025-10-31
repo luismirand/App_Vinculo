@@ -1,6 +1,7 @@
 package com.unison.binku.Fragmentos
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +15,12 @@ import com.unison.binku.Adaptadores.AdaptadorUsuario
 import com.unison.binku.Adaptadores.TipoListaUsuario
 import com.unison.binku.ViewModels.AmigosViewModel
 import com.unison.binku.databinding.FragmentAmigosBinding
+import com.unison.binku.UserProfileActivity   // ← NUEVO import
 
 class FragmentAmigos : Fragment() {
 
     private lateinit var binding: FragmentAmigosBinding
     private lateinit var mContext: Context
-
-    // Obtener el ViewModel
     private val viewModel: AmigosViewModel by viewModels()
 
     private lateinit var adaptadorAmigos: AdaptadorUsuario
@@ -42,14 +42,19 @@ class FragmentAmigos : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupAdapters()
         setupObservers()
         setupSearch()
     }
 
+    private fun openUserProfile(userId: String) {
+        val intent = Intent(mContext, UserProfileActivity::class.java)
+        intent.putExtra("USER_ID", userId)
+        startActivity(intent)
+    }
+
     private fun setupAdapters() {
-        // Adaptador Amigos
+        // AMIGOS
         adaptadorAmigos = AdaptadorUsuario(
             context = mContext,
             userList = emptyList(),
@@ -57,17 +62,18 @@ class FragmentAmigos : Fragment() {
             onActionClick = { friendId ->
                 viewModel.eliminarAmigo(friendId)
                 Toast.makeText(mContext, "Amigo eliminado", Toast.LENGTH_SHORT).show()
-            }
+            },
+            onItemClick = { user -> openUserProfile(user.uid) } // ← abrir perfil
         )
         binding.rvAmigos.layoutManager = LinearLayoutManager(mContext)
         binding.rvAmigos.adapter = adaptadorAmigos
 
-        // Adaptador Solicitudes
+        // SOLICITUDES
         adaptadorSolicitudes = AdaptadorUsuario(
             context = mContext,
             userList = emptyList(),
             listType = TipoListaUsuario.SOLICITUDES,
-            onActionClick = {}, // No se usa
+            onActionClick = {},
             onAcceptClick = { senderId ->
                 viewModel.aceptarSolicitud(senderId)
                 Toast.makeText(mContext, "Solicitud aceptada", Toast.LENGTH_SHORT).show()
@@ -75,12 +81,13 @@ class FragmentAmigos : Fragment() {
             onDeclineClick = { senderId ->
                 viewModel.rechazarSolicitud(senderId)
                 Toast.makeText(mContext, "Solicitud rechazada", Toast.LENGTH_SHORT).show()
-            }
+            },
+            onItemClick = { user -> openUserProfile(user.uid) } // ← abrir perfil
         )
         binding.rvSolicitudes.layoutManager = LinearLayoutManager(mContext)
         binding.rvSolicitudes.adapter = adaptadorSolicitudes
 
-        // Adaptador Búsqueda
+        // BÚSQUEDA
         adaptadorBusqueda = AdaptadorUsuario(
             context = mContext,
             userList = emptyList(),
@@ -88,7 +95,8 @@ class FragmentAmigos : Fragment() {
             onActionClick = { recipientId ->
                 viewModel.enviarSolicitud(recipientId)
                 Toast.makeText(mContext, "Solicitud enviada", Toast.LENGTH_SHORT).show()
-            }
+            },
+            onItemClick = { user -> openUserProfile(user.uid) } // ← abrir perfil
         )
         binding.rvBusqueda.layoutManager = LinearLayoutManager(mContext)
         binding.rvBusqueda.adapter = adaptadorBusqueda
@@ -126,16 +134,12 @@ class FragmentAmigos : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.isNullOrBlank()) {
-                    // Si la búsqueda está vacía, ocultar resultados y mostrar listas
                     binding.rvBusqueda.visibility = View.GONE
                     binding.layoutListas.visibility = View.VISIBLE
-                    viewModel.buscarUsuarios("") // Limpia la lista de búsqueda
+                    viewModel.buscarUsuarios("")
                 } else {
-                    // Si hay texto, mostrar resultados y ocultar listas
                     binding.rvBusqueda.visibility = View.VISIBLE
                     binding.layoutListas.visibility = View.GONE
-                    // Opcional: buscar en tiempo real (puede ser costoso)
-                    // viewModel.buscarUsuarios(newText)
                 }
                 return true
             }

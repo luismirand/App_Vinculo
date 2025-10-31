@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Necesario para Firebase (Database/Storage) -->
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Ubicación (ya los usas) -->
+    <!-- Necesario para Firebase y funcionalidades usadas -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Ubicación (ya los usas en CrearPostActivity) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Cámara -->
-    <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
-
-    <!-- Lectura de imágenes en Android 13+ -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
-    <!-- Lectura (<= Android 12) y escritura (<= Android 9) si aplican -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Cámara -->
+    <uses-permission-sdk-23 android:name="android.permission.CAMERA" /> <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Lectura (<= 12) y escritura (<= 9) -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-
-
 
     <application
         android:allowBackup="true"
@@ -33,9 +22,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_binku_app"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompraYVenta"> <!-- Theme corrected -->
-
-        <!-- Actividades declaradas -->
+        android:theme="@style/Theme.AppCompraYVenta">
+        <activity
+            android:name=".ComentariosActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".CrearPostActivity"
             android:exported="false" />
@@ -47,23 +41,19 @@
             android:exported="false" />
         <activity
             android:name=".Opciones_Login.Login_email"
-            android:exported="false" />
-
-        <!-- Punto de entrada principal (Correcto) -->
+            android:exported="false" /> <!-- Punto de entrada principal -->
         <activity
             android:name=".OpcionesLogin"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- CORREGIDO: Eliminado el intent-filter innecesario -->
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
-
+            android:exported="false" />
     </application>
 
 </manifest>

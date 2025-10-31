@@ -9,22 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.unison.binku.Models.ModeloUsuario
 import com.unison.binku.R
-import com.unison.binku.databinding.ItemUsuarioBinding // Importa el binding del layout
+import com.unison.binku.databinding.ItemUsuarioBinding
 
-// Define los tipos de listas que este adaptador puede manejar
-enum class TipoListaUsuario {
-    AMIGOS,
-    SOLICITUDES,
-    BUSQUEDA
-}
+enum class TipoListaUsuario { AMIGOS, SOLICITUDES, BUSQUEDA }
 
 class AdaptadorUsuario(
     private val context: Context,
     private var userList: List<ModeloUsuario>,
     private val listType: TipoListaUsuario,
-    private val onActionClick: (String) -> Unit, // Para "Agregar", "Eliminar"
-    private val onAcceptClick: (String) -> Unit = {}, // Para "Aceptar"
-    private val onDeclineClick: (String) -> Unit = {} // Para "Rechazar"
+    private val onActionClick: (String) -> Unit,         // Agregar / Eliminar
+    private val onAcceptClick: (String) -> Unit = {},    // Aceptar solicitud
+    private val onDeclineClick: (String) -> Unit = {},   // Rechazar solicitud
+    private val onItemClick: (ModeloUsuario) -> Unit = {}// ← NUEVO: abrir perfil
 ) : RecyclerView.Adapter<AdaptadorUsuario.UserViewHolder>() {
 
     inner class UserViewHolder(val binding: ItemUsuarioBinding) : RecyclerView.ViewHolder(binding.root)
@@ -44,15 +40,17 @@ class AdaptadorUsuario(
         if (user.urlImagenPerfil.isNotEmpty()) {
             Glide.with(context)
                 .load(user.urlImagenPerfil)
-                .placeholder(R.drawable.ic_perfil) // Tu placeholder
-                .error(R.drawable.ic_perfil) // Tu fallback
+                .placeholder(R.drawable.ic_perfil)
+                .error(R.drawable.ic_perfil)
                 .circleCrop()
                 .into(holder.binding.ivAvatarUsuario)
         } else {
             holder.binding.ivAvatarUsuario.setImageResource(R.drawable.ic_perfil)
         }
 
-        // Configurar botones según el tipo de lista
+        // Click en toda la fila → abrir perfil del usuario
+        holder.binding.root.setOnClickListener { onItemClick(user) }
+
         when (listType) {
             TipoListaUsuario.AMIGOS -> {
                 holder.binding.btnAccionPrincipal.text = "Eliminar"
@@ -74,7 +72,6 @@ class AdaptadorUsuario(
                 holder.binding.btnAccionRechazar.visibility = View.GONE
                 holder.binding.btnAccionPrincipal.setOnClickListener {
                     onActionClick(user.uid)
-                    // Deshabilitar botón para que no den clic múltiple
                     (it as Button).text = "Enviado"
                     it.isEnabled = false
                 }
