@@ -119,11 +119,15 @@ class UserProfileActivity : AppCompatActivity() {
             finish()
         }
         binding.btnMensaje.setOnClickListener {
-            Toast.makeText(this, "Mensajería: por implementar", Toast.LENGTH_SHORT).show()
+            binding.btnMensaje.visibility = if (!isOwn) View.VISIBLE else View.GONE
+            binding.btnMensaje.setOnClickListener {
+                val intent = Intent(this, ChatRoomActivity::class.java)
+                intent.putExtra("OTRO_USER_ID", viewingUserId)
+                startActivity(intent)
+            }
         }
     }
 
-    // --- >>> FUNCIÓN MODIFICADA <<< ---
     private fun loadUserInfo() {
         if (viewingUserId.isEmpty()) return
         usuariosRef.child(viewingUserId).addListenerForSingleValueEvent(object: ValueEventListener {
