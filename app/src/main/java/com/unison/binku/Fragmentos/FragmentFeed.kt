@@ -72,7 +72,6 @@ class FragmentFeed : Fragment() {
         return binding.root
     }
 
-    /** Llama este método desde tu menú para abrir la pantalla de crear post */
     fun startCrearPost() {
         val intent = Intent(requireContext(), CrearPostActivity::class.java)
         crearPostLauncher.launch(intent)
