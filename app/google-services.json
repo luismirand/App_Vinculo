@@ -8,41 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:25580175423:android:8f06a1f2fd209caf43f88a",
-        "android_client_info": {
-          "package_name": "com.unison.appcomprayventa"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "25580175423-ekfukcl56sblajjonumkeuejh8ht1knu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD0PwQXVouohfWwqFXvzJtlWIF15dUAolU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "25580175423-ekfukcl56sblajjonumkeuejh8ht1knu.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:25580175423:android:161df0f0ee2b448743f88a",
         "android_client_info": {
           "package_name": "com.unison.binku"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "25580175423-d69udpp9ilmmgmh458o2ui01tm670pdh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unison.binku",
+            "certificate_hash": "363b74bb62ce7e3f77732631b8d7211281908e57"
+          }
+        },
         {
           "client_id": "25580175423-k4ijk83abtdlrqesbaevr4s0f0ojhhi4.apps.googleusercontent.com",
           "client_type": 1,
