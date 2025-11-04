@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
 import com.unison.binku.Adaptadores.AdaptadorComentarios
+import com.unison.binku.Models.ModeloComentario
 import com.unison.binku.ViewModels.CommentsVMFactory
 import com.unison.binku.ViewModels.CommentsViewModel
 import com.unison.binku.databinding.ActivityComentariosBinding
@@ -124,13 +125,24 @@ class ComentariosActivity : AppCompatActivity() {
 
         if (nombre != null) binding.tvNombreAutor.text = nombre
         if (!avatar.isNullOrBlank()) {
-            Glide.with(this).load(avatar).circleCrop().into(binding.ivAvatarAutor)
+            Glide.with(this)
+                .load(avatar)
+                .placeholder(R.drawable.ic_perfil_black)
+                .error(R.drawable.ic_perfil_black)
+                .circleCrop()
+                .into(binding.ivAvatarAutor)
+        } else {
+            binding.ivAvatarAutor.setImageResource(R.drawable.ic_perfil_black)
         }
 
         if (texto != null) binding.tvTextoPost.text = texto
         if (!imagen.isNullOrBlank()) {
             binding.ivImagenPost.visibility = View.VISIBLE
-            Glide.with(this).load(imagen).into(binding.ivImagenPost)
+            Glide.with(this)
+                .load(imagen)
+                .placeholder(R.drawable.ic_perfil_black)
+                .error(R.drawable.ic_perfil_black)
+                .into(binding.ivImagenPost)
         }
 
         if (ts > 0L || ubicacion.isNotBlank()) {
@@ -144,7 +156,6 @@ class ComentariosActivity : AppCompatActivity() {
         val postRef = FirebaseDatabase.getInstance().getReference("Posts").child(postId)
         postRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snap: DataSnapshot) {
-                // OJO: usa los nombres reales de tu DB
                 val texto = snap.child("textoPost").getValue(String::class.java)
                     ?: snap.child("texto").getValue(String::class.java) ?: ""
                 val imagenUrl = snap.child("imagenUrlPost").getValue(String::class.java)
@@ -156,7 +167,11 @@ class ComentariosActivity : AppCompatActivity() {
                 binding.tvTextoPost.text = texto
                 if (imagenUrl.isNotBlank()) {
                     binding.ivImagenPost.visibility = View.VISIBLE
-                    Glide.with(this@ComentariosActivity).load(imagenUrl).into(binding.ivImagenPost)
+                    Glide.with(this@ComentariosActivity)
+                        .load(imagenUrl)
+                        .placeholder(R.drawable.ic_perfil_black)
+                        .error(R.drawable.ic_perfil_black)
+                        .into(binding.ivImagenPost)
                 } else {
                     binding.ivImagenPost.visibility = View.GONE
                 }
@@ -176,9 +191,13 @@ class ComentariosActivity : AppCompatActivity() {
                                 binding.tvNombreAutor.text = nombre
                                 if (avatar.isNotBlank()) {
                                     Glide.with(this@ComentariosActivity)
-                                        .load(avatar).circleCrop().into(binding.ivAvatarAutor)
+                                        .load(avatar)
+                                        .placeholder(R.drawable.ic_perfil_black)
+                                        .error(R.drawable.ic_perfil_black)
+                                        .circleCrop()
+                                        .into(binding.ivAvatarAutor)
                                 } else {
-                                    binding.ivAvatarAutor.setImageResource(R.drawable.ic_perfil_white)
+                                    binding.ivAvatarAutor.setImageResource(R.drawable.ic_perfil_black)
                                 }
                             }
                             override fun onCancelled(error: DatabaseError) {}

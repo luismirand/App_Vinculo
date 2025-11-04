@@ -42,18 +42,22 @@ class AdaptadorComentarios(
                 .circleCrop()
                 .into(b.ivAvatar)
         } else {
-
             b.ivAvatar.setImageResource(R.drawable.ic_perfil_black)
         }
 
-
+        // Lógica de la Imagen del Comentario (con fallback)
         if (c.imagenUrl.isNotBlank()) {
             b.ivImagen.visibility = View.VISIBLE
-            Glide.with(context).load(c.imagenUrl).into(b.ivImagen)
+            Glide.with(context)
+                .load(c.imagenUrl)
+                .placeholder(R.color.guinda_ripple)
+                .error(R.drawable.ic_perfil_black)
+                .into(b.ivImagen)
         } else {
             b.ivImagen.visibility = View.GONE
         }
 
+        // Lógica de Likes (esto ya estaba bien)
         b.tvLikes.text = c.contadorLikes.toString()
         setLikeIcon(b.btnLike, c.isLikedPorUsuarioActual)
 
@@ -69,11 +73,10 @@ class AdaptadorComentarios(
 
         btn.setColorFilter(color)
         btn.setImageResource(R.drawable.ic_like)
+    }
 
-
-        fun update(newList: ArrayList<ModeloComentario>) {
-            comentarios = newList
-            notifyDataSetChanged()
-        }
+    fun update(newList: ArrayList<ModeloComentario>) {
+        comentarios = newList
+        notifyDataSetChanged()
     }
 }
