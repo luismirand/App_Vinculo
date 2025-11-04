@@ -62,7 +62,7 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         setupLists()
-        loadUserInfo() // <-- Función modificada
+        loadUserInfo()
         loadUserPosts()
         loadUserFriends()
         setupButtons()
@@ -70,7 +70,6 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun setupLists() {
-        // ... (Tu código de setupLists va aquí, sin cambios)
         // POSTS
         postsAdapter = AdaptadorPost(
             context = this,
@@ -135,10 +134,9 @@ class UserProfileActivity : AppCompatActivity() {
                 val ts = "${s.child("tiempo").value}".ifEmpty { "0" }
 
                 binding.tvNombre.text = nombres
-                binding.tvEmail.visibility = View.GONE // Oculto como pediste
-                binding.tvTelefono.visibility = View.GONE // Oculto como pediste
+                binding.tvEmail.visibility = View.GONE
+                binding.tvTelefono.visibility = View.GONE
 
-                // --- CAMBIO CLAVE: Usar la nueva función de formato ---
                 if (fNac.isNotEmpty() && fNac != "null") {
                     val cumpleañosFormateado = formatearFechaNacimiento(fNac)
                     binding.tvNacimiento.text = "Cumpleaños: $cumpleañosFormateado"
@@ -146,7 +144,6 @@ class UserProfileActivity : AppCompatActivity() {
                 } else {
                     binding.tvNacimiento.visibility = View.GONE
                 }
-                // --- FIN DEL CAMBIO ---
 
                 binding.tvMiembroDesde.text = "Miembro desde: ${com.unison.binku.Constantes.obtenerFecha(ts.toLongOrNull() ?: 0L)}"
 
@@ -165,13 +162,7 @@ class UserProfileActivity : AppCompatActivity() {
             }
         })
     }
-    // --- >>> FIN DE LA MODIFICACIÓN <<< ---
 
-
-    // --- >>> NUEVA FUNCIÓN AÑADIDA <<< ---
-    /**
-     * Convierte una fecha de "DD/MM/AAAA" a "D de MMMM" (ej: "12/10/1990" -> "12 de octubre")
-     */
     private fun formatearFechaNacimiento(fechaDDMMAAAA: String): String {
         return try {
             val parts = fechaDDMMAAAA.split("/")
@@ -179,7 +170,6 @@ class UserProfileActivity : AppCompatActivity() {
                 val dia = parts[0].toInt()
                 val mes = parts[1].toInt()
 
-                // Convertir número de mes a nombre en español
                 val nombreMes = when (mes) {
                     1 -> "enero"
                     2 -> "febrero"
@@ -209,11 +199,6 @@ class UserProfileActivity : AppCompatActivity() {
             fechaDDMMAAAA // Fallback a la fecha original en caso de error
         }
     }
-    // --- >>> FIN DE LA NUEVA FUNCIÓN <<< ---
-
-
-    // --- El resto de tus funciones (loadUserPosts, loadFriendshipStatus, etc.) ---
-    // --- van aquí SIN CAMBIOS ---
 
     private fun loadUserPosts() {
         if (viewingUserId.isEmpty()) return
