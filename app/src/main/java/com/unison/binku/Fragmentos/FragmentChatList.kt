@@ -1,18 +1,19 @@
 package com.unison.binku.Fragmentos
 
 import android.content.Context
+import android.content.Intent // --- >>> AÑADIR ESTE IMPORT <<< ---
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.Toast // (Este ya no lo usamos, pero lo puedes dejar)
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.unison.binku.Adaptadores.AdaptadorChatList
+import com.unison.binku.ChatRoomActivity // --- >>> AÑADIR ESTE IMPORT <<< ---
 import com.unison.binku.ViewModels.ChatListViewModel
 import com.unison.binku.databinding.FragmentChatListBinding
-
 
 class FragmentChatList : Fragment() {
 
@@ -41,22 +42,28 @@ class FragmentChatList : Fragment() {
         observeViewModel()
     }
 
+    // --- >>> ¡AQUÍ ESTÁ LA CORRECCIÓN! <<< ---
     private fun setupRecyclerView() {
         adapter = AdaptadorChatList(
             context = mContext,
             listaConversaciones = arrayListOf(),
             onItemClick = { conversacion ->
-                // TODO: Abrir la nueva Activity de Chat
-                Toast.makeText(mContext, "Abriendo chat con ${conversacion.nombreOtroUsuario}", Toast.LENGTH_SHORT).show()
-                // val intent = Intent(mContext, ChatRoomActivity::class.java)
-                // intent.putExtra("CHAT_ID", conversacion.chatId)
-                // intent.putExtra("OTRO_USER_ID", conversacion.otroUsuarioId)
-                // startActivity(intent)
+
+                // 1. Crear el Intent para abrir la sala de chat
+                val intent = Intent(mContext, ChatRoomActivity::class.java)
+
+                // 2. Poner el ID del OTRO usuario.
+                //    (Esta es la única info que ChatRoomActivity necesita)
+                intent.putExtra("OTRO_USER_ID", conversacion.otroUsuarioId)
+
+                // 3. Iniciar la actividad
+                startActivity(intent)
             }
         )
         binding.rvConversaciones.layoutManager = LinearLayoutManager(mContext)
         binding.rvConversaciones.adapter = adapter
     }
+    // --- >>> FIN DE LA CORRECCIÓN <<< ---
 
     private fun observeViewModel() {
         viewModel.conversaciones.observe(viewLifecycleOwner) { lista ->
