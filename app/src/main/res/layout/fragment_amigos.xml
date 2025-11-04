@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:queryHint="Buscar usuarios por nombre..."
+        android:queryHint="Buscar por nombre..."
         android:iconifiedByDefault="false" />
 
     <androidx.recyclerview.widget.RecyclerView

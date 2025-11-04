@@ -49,16 +49,16 @@ class AdaptadorPost(
             if (post.urlAvatarAutor.isNotEmpty()) {
                 Glide.with(context)
                     .load(post.urlAvatarAutor)
-                    .placeholder(R.drawable.ic_perfil_white)
-                    .error(R.drawable.ic_perfil_white)
+                    .placeholder(R.drawable.ic_perfil_black)
+                    .error(R.drawable.ic_perfil_black)
                     .circleCrop()
                     .into(holder.binding.ivUserAvatar)
             } else {
-                holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_white)
+                holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_black)
             }
         } catch (e: Exception) {
             Log.e("AdaptadorPost", "Error loading avatar: ${e.message}")
-            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_white)
+            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_black)
         }
 
         holder.binding.tvUserName.text = post.nombreAutor
@@ -93,11 +93,9 @@ class AdaptadorPost(
         holder.binding.btnLike.setIconTintResource(likeIconColor)
         holder.binding.btnLike.setOnClickListener { onLikeClick(post.postId) }
 
-        // Comentarios -> ABRIR ComentariosActivity con la CLAVE CORRECTA
         holder.binding.btnComment.setOnClickListener {
             val intent = Intent(context, com.unison.binku.ComentariosActivity::class.java).apply {
-                putExtra("POST_ID", post.postId)   // <- clave correcta
-                // Si quieres precargar el header sin consultar DB, puedes enviar opcionalmente:
+                putExtra("POST_ID", post.postId)
                 putExtra("POST_NOMBRE", post.nombreAutor)
                 putExtra("POST_AVATAR", post.urlAvatarAutor)
                 putExtra("POST_TEXTO", post.textoPost)
