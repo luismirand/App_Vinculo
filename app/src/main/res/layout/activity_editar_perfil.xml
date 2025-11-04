@@ -94,7 +94,9 @@
                     android:hint="@string/Et_f_nac"
                     android:focusable="false"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:clickable="true"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Código de país + Numero de telefono -->
