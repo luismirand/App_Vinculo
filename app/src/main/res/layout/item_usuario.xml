@@ -14,7 +14,7 @@
         android:id="@+id/ivAvatarUsuario"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_perfil_white"/>
+        android:src="@drawable/ic_perfil_black"/>
 
     <TextView
         android:id="@+id/tvNombreUsuario"
