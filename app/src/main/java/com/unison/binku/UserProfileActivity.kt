@@ -100,7 +100,6 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        // ... (Tu código de setupButtons va aquí, sin cambios)
         val isOwn = viewingUserId.isNotEmpty() && viewingUserId == currentUserId
 
         binding.btnEditarPerfil.visibility = if (isOwn) View.VISIBLE else View.GONE
@@ -119,12 +118,9 @@ class UserProfileActivity : AppCompatActivity() {
             finish()
         }
         binding.btnMensaje.setOnClickListener {
-            binding.btnMensaje.visibility = if (!isOwn) View.VISIBLE else View.GONE
-            binding.btnMensaje.setOnClickListener {
-                val intent = Intent(this, ChatRoomActivity::class.java)
-                intent.putExtra("OTRO_USER_ID", viewingUserId)
-                startActivity(intent)
-            }
+            val intent = Intent(this, ChatRoomActivity::class.java)
+            intent.putExtra("OTRO_USER_ID", viewingUserId)
+            startActivity(intent)
         }
     }
 
@@ -191,16 +187,16 @@ class UserProfileActivity : AppCompatActivity() {
                 }
 
                 if (nombreMes.isNotEmpty()) {
-                    "$dia de $nombreMes" // Ej: "12 de octubre"
+                    "$dia de $nombreMes"
                 } else {
-                    fechaDDMMAAAA // Fallback a la fecha original si el mes es inválido
+                    fechaDDMMAAAA
                 }
             } else {
-                fechaDDMMAAAA // Fallback si el formato no es DD/MM/AAAA
+                fechaDDMMAAAA
             }
         } catch (e: Exception) {
             Log.w("UserProfileActivity", "Error al formatear fecha: $fechaDDMMAAAA", e)
-            fechaDDMMAAAA // Fallback a la fecha original en caso de error
+            fechaDDMMAAAA
         }
     }
 
