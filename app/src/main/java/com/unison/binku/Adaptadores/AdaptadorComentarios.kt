@@ -36,7 +36,7 @@ class AdaptadorComentarios(
         if (c.urlAvatarAutor.isNotBlank()) {
             Glide.with(context).load(c.urlAvatarAutor).circleCrop().into(b.ivAvatar)
         } else {
-            b.ivAvatar.setImageResource(R.drawable.ic_perfil)
+            b.ivAvatar.setImageResource(R.drawable.ic_perfil_white)
         }
 
         if (c.imagenUrl.isNotBlank()) {

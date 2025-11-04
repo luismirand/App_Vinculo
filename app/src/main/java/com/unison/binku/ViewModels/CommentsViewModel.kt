@@ -31,7 +31,8 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
                     if (model != null) {
                         model.commentId = cs.key ?: ""
                         model.contadorLikes = cs.child("contadorLikes").getValue(Int::class.java) ?: 0
-                        model.urlAvatarAutor = cs.child("urlAvatarAutor").getValue(String::class.java) ?: model.urlAvatarAutor
+                        model.urlAvatarAutor = cs.child("urlAvatarAutor").getValue(String::class.java)
+                            ?.takeIf { it.isNotBlank() && it != "null" } ?: "" // Si es null o vacío, usar ""
                         model.isLikedPorUsuarioActual = currentUid?.let { cs.child("Likes").hasChild(it) } ?: false
                         list.add(model)
                     }
@@ -39,7 +40,6 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
                     Log.e("CommentsVM", "Error parsing comment", e)
                 }
             }
-            list.sortByDescending { it.timestamp }
             _comments.value = list
         }
 
@@ -50,7 +50,7 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
     }
 
     init {
-        commentsRef.addValueEventListener(commentsListener)
+        commentsRef.orderByChild("timestamp").addValueEventListener(commentsListener)
     }
 
     fun toggleLike(commentId: String) {
@@ -90,8 +90,10 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
         usuariosRef.child(uid).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val nombre = snapshot.child("nombres").getValue(String::class.java)
-                    ?.takeIf { !it.isNullOrBlank() } ?: (user.displayName ?: "Usuario Binku")
-                val avatarUrl = snapshot.child("urlImagenPerfil").getValue(String::class.java) ?: ""
+                    ?.takeIf { it.isNotBlank() } ?: (user.displayName ?: "Usuario Binku")
+
+                val avatarUrl = snapshot.child("urlImagenPerfil").getValue(String::class.java)
+                    ?.takeIf { it.isNotBlank() && it != "null" } ?: "" // Si es null o vacío, usar ""
 
                 val commentId = commentsRef.push().key ?: return
 
@@ -110,13 +112,11 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
                     commentsRef.child(commentId).setValue(c)
                 }
 
-                // sin imagen
                 if (imageUriStr.isNullOrBlank()) {
                     save("")
                     return
                 }
 
-                // con imagen -> subir a Storage (si falla, guardamos sin imagen)
                 val localUri = Uri.parse(imageUriStr)
                 val storageRef = FirebaseStorage.getInstance()
                     .getReference("CommentImages/$postId/$commentId.jpg")

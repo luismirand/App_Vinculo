@@ -178,7 +178,7 @@ class ComentariosActivity : AppCompatActivity() {
                                     Glide.with(this@ComentariosActivity)
                                         .load(avatar).circleCrop().into(binding.ivAvatarAutor)
                                 } else {
-                                    binding.ivAvatarAutor.setImageResource(R.drawable.ic_perfil)
+                                    binding.ivAvatarAutor.setImageResource(R.drawable.ic_perfil_white)
                                 }
                             }
                             override fun onCancelled(error: DatabaseError) {}
