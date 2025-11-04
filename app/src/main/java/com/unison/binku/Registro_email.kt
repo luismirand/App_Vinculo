@@ -1,5 +1,6 @@
 package com.unison.binku
 
+import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.unison.binku.databinding.ActivityRegistroEmailBinding
+import java.util.Calendar // <-- AÑADIR IMPORT para el calendario
 
 class Registro_email : AppCompatActivity() {
     private lateinit var binding: ActivityRegistroEmailBinding
@@ -30,23 +32,68 @@ class Registro_email : AppCompatActivity() {
         binding.BtnRegistrar.setOnClickListener {
             validarInfo()
         }
+
+        binding.EtFNac.setOnClickListener {
+            mostrarSelectorFecha()
+        }
+    }
+
+    private fun mostrarSelectorFecha() {
+        val c = Calendar.getInstance()
+        val anio = c.get(Calendar.YEAR)
+        val mes = c.get(Calendar.MONTH)
+        val dia = c.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
+            val fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
+            binding.EtFNac.setText(fechaSeleccionada)
+        }, anio, mes, dia)
+
+        // Opcional: Poner una fecha máxima (ej. que no sea menor de 13 años)
+        c.add(Calendar.YEAR, -13)
+        datePickerDialog.datePicker.maxDate = c.timeInMillis
+
+        datePickerDialog.show()
     }
 
     private var email = ""
     private var password = ""
     private var r_password = ""
+    private var nombres = ""
+    private var apellidos = ""
+    private var telefono = ""
+    private var codTelefono = ""
+    private var f_nac = ""
 
     private fun validarInfo() {
+        nombres = binding.EtNombres.text.toString().trim()
+        apellidos = binding.EtApellidos.text.toString().trim()
+        telefono = binding.EtTelefono.text.toString().trim()
+        codTelefono = binding.selectorCod.selectedCountryCodeWithPlus
+        f_nac = binding.EtFNac.text.toString().trim()
+
         email = binding.EtEmail.text.toString().trim()
         password = binding.EtPassword.text.toString().trim()
         r_password = binding.EtRPassword.text.toString().trim()
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            binding.EtEmail.error = "Email inválido"
-            binding.EtEmail.requestFocus()
+        if (nombres.isEmpty()) {
+            binding.EtNombres.error = "Ingrese su nombre"
+            binding.EtNombres.requestFocus()
         }
-        else if(password.isEmpty()){
-            binding.EtEmail.error = "Ingrese un email"
+        else if (apellidos.isEmpty()) {
+            binding.EtApellidos.error = "Ingrese sus apellidos"
+            binding.EtApellidos.requestFocus()
+        }
+        else if (telefono.isEmpty()) {
+            binding.EtTelefono.error = "Ingrese su teléfono"
+            binding.EtTelefono.requestFocus()
+        }
+        else if (f_nac.isEmpty()) {
+            binding.EtFNac.error = "Seleccione su fecha de nacimiento"
+            binding.EtFNac.requestFocus() // Opcional, ya que es un selector
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            binding.EtEmail.error = "Email inválido"
             binding.EtEmail.requestFocus()
         }
         else if(password.isEmpty()){
@@ -58,7 +105,7 @@ class Registro_email : AppCompatActivity() {
             binding.EtRPassword.requestFocus()
         }
         else if(password != r_password){
-            binding.EtRPassword.error = "No coinciden"
+            binding.EtRPassword.error = "Las contraseñas no coinciden"
             binding.EtRPassword.requestFocus()
         }
         else{
@@ -77,10 +124,11 @@ class Registro_email : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 progressDialog.dismiss()
                 Toast.makeText(this,
-                    "No se registró el usuario debido a ${exception.message}",
+                    "ERROR DE REGISTRO: ${exception.message}",
                     Toast.LENGTH_SHORT).show()
             }
     }
+
     private fun llenarInfoBD() {
         progressDialog.setMessage("Guardando información")
 
@@ -89,9 +137,11 @@ class Registro_email : AppCompatActivity() {
         val uidUsuario = firebaseAuth.uid
 
         val hashMap = HashMap<String, Any?>()
-        hashMap["nombres"] = ""
-        hashMap["codigoTelefono"] = ""
-        hashMap["telefono"] = ""
+        hashMap["nombres"] = "$nombres $apellidos" // Juntamos nombre y apellido
+        hashMap["codigoTelefono"] = codTelefono
+        hashMap["telefono"] = telefono
+        hashMap["fecha_nac"] = f_nac
+
         hashMap["urlImagenPerfil"] = ""
         hashMap["proveedor"] = "Email"
         hashMap["escribiendo"] = ""
@@ -99,7 +149,6 @@ class Registro_email : AppCompatActivity() {
         hashMap["online"] = true
         hashMap["email"] = "${emailUsuario}"
         hashMap["uid"] = "${uidUsuario}"
-        hashMap["fecha_nac"] = ""
 
         val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
         ref.child(uidUsuario!!)
