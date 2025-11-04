@@ -153,11 +153,11 @@ class UserProfileActivity : AppCompatActivity() {
                 if (imagen.isNotEmpty() && imagen != "null") {
                     Glide.with(this@UserProfileActivity)
                         .load(imagen)
-                        .placeholder(R.drawable.ic_login)
-                        .error(R.drawable.ic_login)
+                        .placeholder(R.drawable.ic_perfil_black)
+                        .error(R.drawable.ic_perfil_black)
                         .into(binding.ivAvatar)
                 } else {
-                    binding.ivAvatar.setImageResource(R.drawable.ic_login)
+                    binding.ivAvatar.setImageResource(R.drawable.ic_perfil_black)
                 }
             }
             override fun onCancelled(error: DatabaseError) {

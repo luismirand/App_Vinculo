@@ -42,7 +42,7 @@
 
                 <ImageView
                     android:id="@+id/img_perfil"
-                    android:src="@drawable/ic_login"
+                    android:src="@drawable/ic_perfil_black"
                     android:scaleType="centerCrop"
                     android:layout_width="120dp"
                     android:layout_height="120dp"/>

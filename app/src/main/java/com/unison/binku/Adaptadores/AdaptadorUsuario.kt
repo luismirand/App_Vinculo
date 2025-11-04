@@ -40,12 +40,12 @@ class AdaptadorUsuario(
         if (user.urlImagenPerfil.isNotEmpty()) {
             Glide.with(context)
                 .load(user.urlImagenPerfil)
-                .placeholder(R.drawable.ic_perfil)
-                .error(R.drawable.ic_perfil)
+                .placeholder(R.drawable.ic_perfil_white)
+                .error(R.drawable.ic_perfil_white)
                 .circleCrop()
                 .into(holder.binding.ivAvatarUsuario)
         } else {
-            holder.binding.ivAvatarUsuario.setImageResource(R.drawable.ic_perfil)
+            holder.binding.ivAvatarUsuario.setImageResource(R.drawable.ic_perfil_white)
         }
 
         // Click en toda la fila → abrir perfil del usuario

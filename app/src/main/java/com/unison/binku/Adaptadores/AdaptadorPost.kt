@@ -49,16 +49,16 @@ class AdaptadorPost(
             if (post.urlAvatarAutor.isNotEmpty()) {
                 Glide.with(context)
                     .load(post.urlAvatarAutor)
-                    .placeholder(R.drawable.ic_perfil)
-                    .error(R.drawable.ic_perfil)
+                    .placeholder(R.drawable.ic_perfil_white)
+                    .error(R.drawable.ic_perfil_white)
                     .circleCrop()
                     .into(holder.binding.ivUserAvatar)
             } else {
-                holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil)
+                holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_white)
             }
         } catch (e: Exception) {
             Log.e("AdaptadorPost", "Error loading avatar: ${e.message}")
-            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil)
+            holder.binding.ivUserAvatar.setImageResource(R.drawable.ic_perfil_white)
         }
 
         holder.binding.tvUserName.text = post.nombreAutor

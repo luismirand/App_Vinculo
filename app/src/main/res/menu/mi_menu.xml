@@ -19,7 +19,7 @@
 
     <item android:id="@+id/Item_Perfil"
         android:title="@string/Item_Perfil"
-        android:icon="@drawable/ic_perfil"/>
+        android:icon="@drawable/ic_perfil_white"/>
 
 
 
