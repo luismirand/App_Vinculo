@@ -13,13 +13,13 @@
 
     <string name="Txt_login">Login de usuario</string>
     <string name="Et_email">Email</string>
-    <string name="Et_password">Password</string>
+    <string name="Et_password">Contraseña</string>
     <string name="Btn_ingresar">Ingresar</string>
     <string name="Txt_no_cuenta">¿No tienes una cuenta?</string>
     <string name="Txt_registrarme">REGISTRARME</string>
 
 
-    <string name="Txt_registro">Registro de Usuario</string>
+    <string name="Txt_registro">Registro</string>
     <string name="Et_r_password">Repetir contraseña</string>
     <string name="Btn_registrar">Registrar</string>
 
