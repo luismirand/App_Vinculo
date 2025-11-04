@@ -15,7 +15,7 @@ import com.unison.binku.Adaptadores.AdaptadorUsuario
 import com.unison.binku.Adaptadores.TipoListaUsuario
 import com.unison.binku.ViewModels.AmigosViewModel
 import com.unison.binku.databinding.FragmentAmigosBinding
-import com.unison.binku.UserProfileActivity   // ← NUEVO import
+import com.unison.binku.UserProfileActivity
 
 class FragmentAmigos : Fragment() {
 

@@ -10,9 +10,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.unison.binku.Fragmentos.FragmentAmigos
+import com.unison.binku.Fragmentos.FragmentChatList
 import com.unison.binku.Fragmentos.FragmentFeed
 import com.unison.binku.Fragmentos.FragmentPerfil
-import com.unison.binku.Fragmentos.FragmentVideos
 import com.unison.binku.ViewModels.FeedViewModel
 import com.unison.binku.databinding.ActivityMainBinding
 
@@ -71,8 +71,8 @@ class MainActivity : AppCompatActivity() {
                     verFragmentoFeed()
                     true
                 }
-                R.id.Item_Videos -> {
-                    verFragmentoVideos()
+                R.id.Item_ChatList -> {
+                    verFragmentoChatList()
                     true
                 }
                 R.id.Item_Publicar -> {
@@ -117,11 +117,11 @@ class MainActivity : AppCompatActivity() {
         fragmentTransition.commit()
     }
 
-    private fun verFragmentoVideos(){
-        binding.TituloRL.text="Videos"
-        val fragment = FragmentVideos()
+    private fun verFragmentoChatList(){
+        binding.TituloRL.text="Chats"
+        val fragment = FragmentChatList()
         val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentVideos")
+        fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentChatList")
         fragmentTransition.commit()
     }
 

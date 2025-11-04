@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Binku</string>
     <string name="Item_Feed">Feed</string>
-    <string name="Item_Videos">Videos</string>
+    <string name="Item_Chats">Chats</string>
     <string name="Item_Publicar">Publicar</string>
     <string name="Item_Amigos">Amigos</string>
     <string name="Item_Perfil">Perfil</string>">

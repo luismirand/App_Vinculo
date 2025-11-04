@@ -5,9 +5,9 @@
         android:title="@string/Item_Feed"
         android:icon="@drawable/ic_feed" />
 
-    <item android:id="@+id/Item_Videos"
-        android:title="@string/Item_Videos"
-        android:icon="@drawable/ic_videos"/>
+    <item android:id="@+id/Item_ChatList"
+        android:title="@string/Item_Chats"
+        android:icon="@drawable/ic_chats"/>
 
     <item android:id="@+id/Item_Publicar"
         android:title="@string/Item_Publicar"
