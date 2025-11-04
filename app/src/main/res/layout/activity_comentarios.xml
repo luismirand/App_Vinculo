@@ -10,7 +10,6 @@
     android:background="@color/background"
     tools:context=".ComentariosActivity">
 
-    <!-- AppBar bonita con título centrado -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarComentarios"
         style="@style/Widget.MaterialComponents.Toolbar"
@@ -18,8 +17,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorSurface"
         app:title="Comentarios"
-        app:titleCentered="true"
-        app:navigationIcon="@drawable/ic_back" />
+        app:titleCentered="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contentContainer"
@@ -29,7 +27,6 @@
         android:paddingTop="?attr/actionBarSize"
         android:animateLayoutChanges="true">
 
-        <!-- Header del post (avatar, nombre, meta, texto e imagen) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPostHeader"
             android:layout_width="0dp"
@@ -46,14 +43,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="12dp">
-
-                <!-- Fila superior: back + avatar + nombre + meta -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
-
                     <ImageButton
                         android:id="@+id/btnBack"
                         android:layout_width="36dp"
@@ -62,7 +56,6 @@
                         android:contentDescription="@string/app_name"
                         android:src="@drawable/ic_back"
                         app:tint="?attr/colorOnSurface" />
-
                     <ImageView
                         android:id="@+id/ivAvatarAutor"
                         android:layout_width="44dp"
@@ -71,14 +64,12 @@
                         android:src="@drawable/ic_perfil"
                         android:scaleType="centerCrop"
                         android:contentDescription="@string/app_name" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="10dp"
                         android:orientation="vertical">
-
                         <TextView
                             android:id="@+id/tvNombreAutor"
                             android:layout_width="wrap_content"
@@ -86,7 +77,6 @@
                             android:textStyle="bold"
                             android:textSize="16sp"
                             tools:text="Deadpool" />
-
                         <TextView
                             android:id="@+id/tvFechaYUbicacion"
                             android:layout_width="wrap_content"
@@ -98,8 +88,6 @@
                             tools:text="hace 2 h · Hermosillo, Son." />
                     </LinearLayout>
                 </LinearLayout>
-
-                <!-- Texto del post -->
                 <TextView
                     android:id="@+id/tvTextoPost"
                     android:layout_width="match_parent"
@@ -107,8 +95,6 @@
                     android:layout_marginTop="8dp"
                     android:textSize="15sp"
                     tools:text="Este es el texto del post original con varias líneas para probar el ajuste." />
-
-                <!-- Imagen del post -->
                 <ImageView
                     android:id="@+id/ivImagenPost"
                     android:layout_width="match_parent"
@@ -119,11 +105,10 @@
                     android:visibility="gone"
                     tools:visibility="visible"
                     tools:src="@tools:sample/backgrounds/scenic" />
-
             </LinearLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Lista de comentarios -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvComentarios"
             android:layout_width="0dp"
@@ -138,7 +123,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:listitem="@layout/item_comentario" />
 
-        <!-- Estado vacío -->
         <LinearLayout
             android:id="@+id/emptyState"
             android:layout_width="0dp"
@@ -151,16 +135,8 @@
             app:layout_constraintBottom_toTopOf="@id/inputBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sé el primero en comentar"
-                android:textStyle="bold"
-                android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- Composer (se eleva con el teclado gracias a adjustResize en el Manifest) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/inputBar"
             android:layout_width="0dp"
@@ -177,7 +153,6 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp">
 
-                <!-- Preview de imagen adjunta -->
                 <ImageView
                     android:id="@+id/ivPreview"
                     android:layout_width="84dp"
@@ -188,7 +163,6 @@
                     android:visibility="gone"
                     tools:visibility="visible"
                     tools:src="@tools:sample/backgrounds/scenic" />
-
                 <ImageButton
                     android:id="@+id/btnRemovePreview"
                     android:layout_width="24dp"
@@ -201,7 +175,6 @@
                     android:visibility="gone"
                     app:tint="@android:color/white" />
 
-                <!-- Campo de texto -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_comment"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -216,7 +189,6 @@
                     app:boxCornerRadiusTopEnd="20dp"
                     app:boxCornerRadiusBottomStart="20dp"
                     app:boxCornerRadiusBottomEnd="20dp">
-
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_comment"
                         android:layout_width="match_parent"
@@ -228,20 +200,22 @@
                         android:inputType="textCapSentences|textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Botón adjuntar -->
+
                 <ImageButton
                     android:id="@+id/btnAddImage"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_alignBottom="@id/til_comment"
                     android:layout_marginEnd="6dp"
                     android:layout_toStartOf="@id/btnSend"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Agregar imagen"
                     android:src="@drawable/ic_selec_imagen"
-                    app:tint="?attr/colorPrimary" />
+                    app:tint="?attr/colorPrimary"
 
-                <!-- Botón enviar -->
+                    android:layout_alignTop="@id/btnSend"
+                    android:layout_alignBottom="@id/btnSend"
+                    />
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btnSend"
                     android:layout_width="wrap_content"
@@ -251,7 +225,10 @@
                     android:layout_marginStart="6dp"
                     android:contentDescription="Enviar"
                     android:src="@drawable/ic_send"
-                    app:backgroundTint="?attr/colorPrimary" />
+
+                    app:backgroundTint="?attr/colorPrimary"
+                    app:tint="@android:color/white"
+                    />
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
 
