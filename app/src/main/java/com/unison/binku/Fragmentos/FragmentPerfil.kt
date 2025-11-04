@@ -9,6 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.bumptech.glide.Glide
+// --- >>> AÑADIR ESTOS IMPORTS <<< ---
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+// --- >>> FIN DE IMPORTS <<< ---
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,6 +31,8 @@ class FragmentPerfil : Fragment() {
     private lateinit var binding: FragmentPerfilBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var mContext: Context
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+
 
     override fun onAttach(context: Context) {
         mContext = context
@@ -44,6 +51,14 @@ class FragmentPerfil : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
 
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
+
         leerInfo()
 
         binding.BtnEditarPerfil.setOnClickListener {
@@ -52,11 +67,15 @@ class FragmentPerfil : Fragment() {
 
         binding.BtnCerrarSesion.setOnClickListener {
             firebaseAuth.signOut()
-            // Corregido para ir a OpcionesLogin
-            val intent = Intent(mContext, OpcionesLogin::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            mContext.startActivity(intent)
-            activity?.finishAffinity() // Cierra todas las actividades
+            mGoogleSignInClient.signOut().addOnCompleteListener {
+
+                if (isAdded && mContext != null) {
+                    val intent = Intent(mContext, OpcionesLogin::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    mContext.startActivity(intent)
+                    activity?.finishAffinity()
+                }
+            }
         }
     }
 
@@ -86,15 +105,14 @@ class FragmentPerfil : Fragment() {
                 binding.TvTelefono.text = cod_tel
                 binding.TvMiembroDesde.text = for_tiempo
 
-                // --- CORRECCIÓN: Lógica robusta para cargar la imagen ---
                 try{
                     if (imagen.isNotEmpty() && imagen != "null") {
                         Glide.with(mContext)
                             .load(imagen)
-                            .placeholder(R.drawable.ic_perfil_black)// Placeholder mientras carga
-                            .into(binding.TvPerfil) // Asegúrate que TvPerfil sea un ImageView
+                            .placeholder(R.drawable.ic_perfil_black)
+                            .error(R.drawable.ic_perfil_black)
+                            .into(binding.TvPerfil)
                     } else {
-                        // Si no hay imagen, poner el placeholder directamente
                         binding.TvPerfil.setImageResource(R.drawable.ic_perfil_black)
                     }
                 } catch (e: Exception){
@@ -102,10 +120,13 @@ class FragmentPerfil : Fragment() {
                 }
 
                 if (proveedor == "Email") {
-                    val esVerificado = firebaseAuth.currentUser!!.isEmailVerified
-                    if (esVerificado) {
-                        binding.TvEstadoCuenta.text = "Verificado"
-                    } else {
+                    firebaseAuth.currentUser?.let { user ->
+                        if (user.isEmailVerified) {
+                            binding.TvEstadoCuenta.text = "Verificado"
+                        } else {
+                            binding.TvEstadoCuenta.text = "No Verificado"
+                        }
+                    } ?: run {
                         binding.TvEstadoCuenta.text = "No Verificado"
                     }
                 } else {
@@ -114,7 +135,6 @@ class FragmentPerfil : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Es bueno tener un mensaje de error aquí
                 Toast.makeText(mContext, "Error al cargar los datos.", Toast.LENGTH_SHORT).show()
             }
 
