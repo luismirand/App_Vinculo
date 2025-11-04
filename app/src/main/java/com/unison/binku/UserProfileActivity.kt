@@ -2,6 +2,7 @@ package com.unison.binku
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -38,6 +40,14 @@ class UserProfileActivity : AppCompatActivity() {
     private var viewingUserId: String = ""
     private val currentUserId: String get() = auth.currentUser?.uid ?: ""
 
+    private enum class FriendshipStatus {
+        OWN_PROFILE,
+        FRIENDS,
+        PENDING_SENT_BY_ME,
+        PENDING_SENT_TO_ME,
+        STRANGERS
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserProfileBinding.inflate(layoutInflater)
@@ -45,15 +55,22 @@ class UserProfileActivity : AppCompatActivity() {
 
         viewingUserId = intent.getStringExtra("USER_ID") ?: ""
 
+        if (viewingUserId.isEmpty()) {
+            Toast.makeText(this, "No se pudo cargar el perfil.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         setupLists()
-        loadUserInfo()
+        loadUserInfo() // <-- Función modificada
         loadUserPosts()
         loadUserFriends()
-
         setupButtons()
+        loadFriendshipStatus()
     }
 
     private fun setupLists() {
+        // ... (Tu código de setupLists va aquí, sin cambios)
         // POSTS
         postsAdapter = AdaptadorPost(
             context = this,
@@ -64,15 +81,18 @@ class UserProfileActivity : AppCompatActivity() {
         binding.rvUserPosts.layoutManager = LinearLayoutManager(this)
         binding.rvUserPosts.adapter = postsAdapter
 
-        // AMIGOS (lista simple, sin acciones)
+        // AMIGOS
         amigosAdapter = AdaptadorUsuario(
             context = this,
             userList = emptyList(),
             listType = TipoListaUsuario.AMIGOS,
-            onActionClick = {}, // no acciones aquí
-            onItemClick = { user -> // navegar al perfil del amigo del amigo
+            onActionClick = {},
+            onAcceptClick = {},
+            onDeclineClick = {},
+            onItemClick = { user ->
                 if (user.uid.isNotEmpty() && user.uid != viewingUserId) {
-                    startActivity(Intent(this, UserProfileActivity::class.java).putExtra("USER_ID", user.uid))
+                    val intent = Intent(this, UserProfileActivity::class.java).putExtra("USER_ID", user.uid)
+                    startActivity(intent)
                 }
             }
         )
@@ -81,14 +101,12 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
+        // ... (Tu código de setupButtons va aquí, sin cambios)
         val isOwn = viewingUserId.isNotEmpty() && viewingUserId == currentUserId
 
-        // Propios
         binding.btnEditarPerfil.visibility = if (isOwn) View.VISIBLE else View.GONE
         binding.btnCerrarSesion.visibility = if (isOwn) View.VISIBLE else View.GONE
-
-        // Otros
-        binding.btnAgregarAmigo.visibility = if (!isOwn) View.VISIBLE else View.GONE
+        binding.btnAgregarAmigo.visibility = View.GONE
         binding.btnMensaje.visibility = if (!isOwn) View.VISIBLE else View.GONE
 
         binding.btnEditarPerfil.setOnClickListener {
@@ -104,44 +122,98 @@ class UserProfileActivity : AppCompatActivity() {
         binding.btnMensaje.setOnClickListener {
             Toast.makeText(this, "Mensajería: por implementar", Toast.LENGTH_SHORT).show()
         }
-        binding.btnAgregarAmigo.setOnClickListener {
-            if (viewingUserId.isNotEmpty() && currentUserId.isNotEmpty() && viewingUserId != currentUserId) {
-                solicitudesRef.child(viewingUserId).child(currentUserId).setValue(true)
-                Toast.makeText(this, "Solicitud enviada", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
+    // --- >>> FUNCIÓN MODIFICADA <<< ---
     private fun loadUserInfo() {
         if (viewingUserId.isEmpty()) return
         usuariosRef.child(viewingUserId).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(s: DataSnapshot) {
                 val nombres = "${s.child("nombres").value}"
-                val email = "${s.child("email").value}"
                 val imagen = "${s.child("urlImagenPerfil").value}"
                 val fNac = "${s.child("fecha_nac").value}"
-                val telefono = "${s.child("telefono").value}"
-                val codigo = "${s.child("codigoTelefono").value}"
                 val ts = "${s.child("tiempo").value}".ifEmpty { "0" }
 
                 binding.tvNombre.text = nombres
-                binding.tvEmail.text = email
-                binding.tvNacimiento.text = fNac
-                binding.tvTelefono.text = (codigo + telefono)
-                binding.tvMiembroDesde.text = com.unison.binku.Constantes.obtenerFecha(ts.toLongOrNull() ?: 0L)
+                binding.tvEmail.visibility = View.GONE // Oculto como pediste
+                binding.tvTelefono.visibility = View.GONE // Oculto como pediste
+
+                // --- CAMBIO CLAVE: Usar la nueva función de formato ---
+                if (fNac.isNotEmpty() && fNac != "null") {
+                    val cumpleañosFormateado = formatearFechaNacimiento(fNac)
+                    binding.tvNacimiento.text = "Cumpleaños: $cumpleañosFormateado"
+                    binding.tvNacimiento.visibility = View.VISIBLE
+                } else {
+                    binding.tvNacimiento.visibility = View.GONE
+                }
+                // --- FIN DEL CAMBIO ---
+
+                binding.tvMiembroDesde.text = "Miembro desde: ${com.unison.binku.Constantes.obtenerFecha(ts.toLongOrNull() ?: 0L)}"
 
                 if (imagen.isNotEmpty() && imagen != "null") {
                     Glide.with(this@UserProfileActivity)
                         .load(imagen)
                         .placeholder(R.drawable.ic_login)
+                        .error(R.drawable.ic_login)
                         .into(binding.ivAvatar)
                 } else {
                     binding.ivAvatar.setImageResource(R.drawable.ic_login)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@UserProfileActivity, "Error al cargar info", Toast.LENGTH_SHORT).show()
+            }
         })
     }
+    // --- >>> FIN DE LA MODIFICACIÓN <<< ---
+
+
+    // --- >>> NUEVA FUNCIÓN AÑADIDA <<< ---
+    /**
+     * Convierte una fecha de "DD/MM/AAAA" a "D de MMMM" (ej: "12/10/1990" -> "12 de octubre")
+     */
+    private fun formatearFechaNacimiento(fechaDDMMAAAA: String): String {
+        return try {
+            val parts = fechaDDMMAAAA.split("/")
+            if (parts.size == 3) {
+                val dia = parts[0].toInt()
+                val mes = parts[1].toInt()
+
+                // Convertir número de mes a nombre en español
+                val nombreMes = when (mes) {
+                    1 -> "enero"
+                    2 -> "febrero"
+                    3 -> "marzo"
+                    4 -> "abril"
+                    5 -> "mayo"
+                    6 -> "junio"
+                    7 -> "julio"
+                    8 -> "agosto"
+                    9 -> "septiembre"
+                    10 -> "octubre"
+                    11 -> "noviembre"
+                    12 -> "diciembre"
+                    else -> ""
+                }
+
+                if (nombreMes.isNotEmpty()) {
+                    "$dia de $nombreMes" // Ej: "12 de octubre"
+                } else {
+                    fechaDDMMAAAA // Fallback a la fecha original si el mes es inválido
+                }
+            } else {
+                fechaDDMMAAAA // Fallback si el formato no es DD/MM/AAAA
+            }
+        } catch (e: Exception) {
+            Log.w("UserProfileActivity", "Error al formatear fecha: $fechaDDMMAAAA", e)
+            fechaDDMMAAAA // Fallback a la fecha original en caso de error
+        }
+    }
+    // --- >>> FIN DE LA NUEVA FUNCIÓN <<< ---
+
+
+    // --- El resto de tus funciones (loadUserPosts, loadFriendshipStatus, etc.) ---
+    // --- van aquí SIN CAMBIOS ---
 
     private fun loadUserPosts() {
         if (viewingUserId.isEmpty()) return
@@ -197,6 +269,90 @@ class UserProfileActivity : AppCompatActivity() {
         })
     }
 
+    private fun loadFriendshipStatus() {
+        val isOwn = viewingUserId.isNotEmpty() && viewingUserId == currentUserId
+        if (isOwn || currentUserId.isEmpty()) {
+            updateButtonsForStatus(FriendshipStatus.OWN_PROFILE)
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val areFriends = amigosRef.child(currentUserId).child(viewingUserId).get().await().exists()
+                if (areFriends) {
+                    withContext(Dispatchers.Main) { updateButtonsForStatus(FriendshipStatus.FRIENDS) }
+                    return@launch
+                }
+
+                val iSentRequest = solicitudesRef.child(viewingUserId).child(currentUserId).get().await().exists()
+                if (iSentRequest) {
+                    withContext(Dispatchers.Main) { updateButtonsForStatus(FriendshipStatus.PENDING_SENT_BY_ME) }
+                    return@launch
+                }
+
+                val theySentRequest = solicitudesRef.child(currentUserId).child(viewingUserId).get().await().exists()
+                if (theySentRequest) {
+                    withContext(Dispatchers.Main) { updateButtonsForStatus(FriendshipStatus.PENDING_SENT_TO_ME) }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main) { updateButtonsForStatus(FriendshipStatus.STRANGERS) }
+
+            } catch (e: Exception) {
+                Log.e("UserProfileActivity", "Error al verificar amistad", e)
+            }
+        }
+    }
+
+    private fun updateButtonsForStatus(status: FriendshipStatus) {
+        binding.btnAgregarAmigo.visibility = View.VISIBLE
+
+        when (status) {
+            FriendshipStatus.OWN_PROFILE -> {
+                binding.btnAgregarAmigo.visibility = View.GONE
+            }
+            FriendshipStatus.FRIENDS -> {
+                binding.btnAgregarAmigo.text = "Amigos ✅"
+                binding.btnAgregarAmigo.isEnabled = false
+            }
+            FriendshipStatus.PENDING_SENT_BY_ME -> {
+                binding.btnAgregarAmigo.text = "Solicitud Enviada"
+                binding.btnAgregarAmigo.isEnabled = false
+            }
+            FriendshipStatus.PENDING_SENT_TO_ME -> {
+                binding.btnAgregarAmigo.text = "Aceptar Solicitud"
+                binding.btnAgregarAmigo.isEnabled = true
+                binding.btnAgregarAmigo.setOnClickListener { acceptFriendRequest() }
+            }
+            FriendshipStatus.STRANGERS -> {
+                binding.btnAgregarAmigo.text = "Agregar Amigo"
+                binding.btnAgregarAmigo.isEnabled = true
+                binding.btnAgregarAmigo.setOnClickListener { sendFriendRequest() }
+            }
+        }
+    }
+
+    private fun sendFriendRequest() {
+        solicitudesRef.child(viewingUserId).child(currentUserId).setValue(true)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Solicitud enviada", Toast.LENGTH_SHORT).show()
+                loadFriendshipStatus()
+            }
+    }
+
+    private fun acceptFriendRequest() {
+        amigosRef.child(currentUserId).child(viewingUserId).setValue(true)
+        amigosRef.child(viewingUserId).child(currentUserId).setValue(true)
+            .addOnSuccessListener {
+                solicitudesRef.child(currentUserId).child(viewingUserId).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Amigo agregado", Toast.LENGTH_SHORT).show()
+                        loadFriendshipStatus()
+                        loadUserFriends()
+                    }
+            }
+    }
+
     private fun toggleLikePost(postId: String) {
         val uid = currentUserId
         if (uid.isEmpty()) return
@@ -220,7 +376,6 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun deletePost(postId: String) {
-        // Solo se mostrará el botón borrar si el post es del usuario logueado (AdaptadorPost ya lo maneja).
         postsRef.child(postId).removeValue()
     }
 }

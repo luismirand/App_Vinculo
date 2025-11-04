@@ -54,7 +54,7 @@
                     android:id="@+id/tvNacimiento"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fecha de nacimiento"
+                    android:text="Cumpleaños: "
                     android:layout_marginTop="4dp"/>
 
                 <TextView
@@ -68,7 +68,7 @@
                     android:id="@+id/tvMiembroDesde"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Miembro desde ..."
+                    android:text="Miembro desde: "
                     android:layout_marginTop="4dp"/>
 
                 <!-- Botones MI perfil -->
