@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Necesario para Firebase y funcionalidades usadas -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Ubicación (ya los usas en CrearPostActivity) -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Ubicación (en CrearPostActivity) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Cámara -->
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" /> <!-- Android 13+ -->
@@ -31,6 +31,11 @@
             android:name=".UserProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".MiAppFirebase"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name" />
+        <activity
             android:name=".ChatRoomActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -58,5 +63,6 @@
             android:name=".MainActivity"
             android:exported="false" />
     </application>
+    
 
 </manifest>

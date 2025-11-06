@@ -1,18 +1,21 @@
 package com.unison.binku.ViewModels
 
+import android.app.Application
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.unison.binku.Models.ModeloPost
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.storage.FirebaseStorage
+import com.unison.binku.ImageCompressor
 
-class FeedViewModel : ViewModel() {
+// --- MODIFICADO: ViewModel -> AndroidViewModel ---
+class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _posts = MutableLiveData<ArrayList<ModeloPost>>(arrayListOf())
     val posts: LiveData<ArrayList<ModeloPost>> get() = _posts
@@ -22,6 +25,9 @@ class FeedViewModel : ViewModel() {
     private val usuariosRef = FirebaseDatabase.getInstance().getReference("Usuarios")
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val currentUserId = firebaseAuth.currentUser?.uid
+
+    // --- MODIFICADO: Añadido contexto ---
+    private val context = application.applicationContext
 
     // Listener en tiempo real
     private val postListener = object : ValueEventListener {
@@ -97,8 +103,7 @@ class FeedViewModel : ViewModel() {
     }
 
     /**
-     * Agrega un post. Si hay imagen y Storage está activo, sube y usa downloadUrl.
-     * Si falla (no hay Storage/permiso), GUARDA el post con la URI local (content://) como fallback.
+     * Agrega un post.
      */
     fun agregarPostFirebase(postText: String, imageUriString: String?, location: String) {
         val currentUser = firebaseAuth.currentUser ?: return
@@ -135,11 +140,26 @@ class FeedViewModel : ViewModel() {
 
                     // 2) Con imagen -> intentar subir a Storage
                     val localUri = Uri.parse(imageUriString)
+
+                    // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
+                    // Comprimir la imagen ANTES de subirla
+                    val imagenComprimida = ImageCompressor.compressImage(context, localUri, quality = 80, maxSizeKb = 500)
+
+                    if (imagenComprimida == null) {
+                        Log.w("FeedViewModel", "Error al comprimir imagen, guardo URI local")
+                        guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
+                        return
+                    }
+                    // --- >>> FIN DE MODIFICACIÓN <<< ---
+
+
                     try {
                         val storageRef = FirebaseStorage.getInstance()
-                            .getReference("PostImages/$currentUserUid/$postId.jpg")
+                            .getReference("PostImages/$currentUserUid/$postId.jpg") // Ruta de las reglas
 
-                        storageRef.putFile(localUri)
+                        // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
+                        // En lugar de .putFile(localUri), usamos .putBytes(imagenComprimida)
+                        storageRef.putBytes(imagenComprimida)
                             .addOnSuccessListener {
                                 storageRef.downloadUrl
                                     .addOnSuccessListener { downloadUri ->
@@ -161,7 +181,7 @@ class FeedViewModel : ViewModel() {
                                     }
                             }
                             .addOnFailureListener { e ->
-                                Log.w("FeedViewModel", "Fallo putFile en Storage, guardo URI local: ${e.message}")
+                                Log.w("FeedViewModel", "Fallo putBytes en Storage, guardo URI local: ${e.message}")
                                 guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                             }
                     } catch (e: Exception) {

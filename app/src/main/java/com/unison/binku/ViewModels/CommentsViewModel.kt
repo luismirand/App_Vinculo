@@ -1,20 +1,26 @@
 package com.unison.binku.ViewModels
 
+import android.app.Application
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
+import com.unison.binku.ImageCompressor
 import com.unison.binku.Models.ModeloComentario
 
-class CommentsViewModel(private val postId: String) : ViewModel() {
+// --- MODIFICADO: ViewModel -> AndroidViewModel y constructor ---
+class CommentsViewModel(application: Application, private val postId: String) : AndroidViewModel(application) {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val currentUid = auth.currentUser?.uid
+
+    // --- MODIFICADO: Añadido contexto ---
+    private val context = application.applicationContext
 
     private val usuariosRef = db.getReference("Usuarios")
     private val commentsRef = db.getReference("Posts").child(postId).child("Comments")
@@ -118,10 +124,25 @@ class CommentsViewModel(private val postId: String) : ViewModel() {
                 }
 
                 val localUri = Uri.parse(imageUriStr)
-                val storageRef = FirebaseStorage.getInstance()
-                    .getReference("CommentImages/$postId/$commentId.jpg")
 
-                storageRef.putFile(localUri)
+                // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
+                // Comprimir la imagen ANTES de subirla
+                val imagenComprimida = ImageCompressor.compressImage(context, localUri, quality = 80, maxSizeKb = 400) // 400KB para comentarios
+
+                if (imagenComprimida == null) {
+                    Log.w("CommentsVM", "No se pudo comprimir, guardo sin imagen")
+                    save("")
+                    return
+                }
+                // --- >>> FIN DE MODIFICACIÓN <<< ---
+
+
+                val storageRef = FirebaseStorage.getInstance()
+                    .getReference("CommentImages/$postId/$commentId.jpg") // Ruta de las reglas
+
+                // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
+                // En lugar de .putFile(localUri), usamos .putBytes(imagenComprimida)
+                storageRef.putBytes(imagenComprimida)
                     .addOnSuccessListener {
                         storageRef.downloadUrl
                             .addOnSuccessListener { downloadUri -> save(downloadUri.toString()) }

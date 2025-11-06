@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -19,6 +20,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.unison.binku.databinding.ActivityEditarPerfilBinding
 import java.util.Calendar
 import java.util.HashMap
@@ -28,6 +30,7 @@ class EditarPerfil : AppCompatActivity() {
     private lateinit var binding: ActivityEditarPerfilBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var storage: FirebaseStorage // <-- MODIFICADO
     private var imageUri: Uri? = null
     private var miUrlImagenPerfil = ""
 
@@ -38,6 +41,7 @@ class EditarPerfil : AppCompatActivity() {
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        storage = FirebaseStorage.getInstance() // <-- MODIFICADO
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Por favor espere")
         progressDialog.setCanceledOnTouchOutside(false)
@@ -144,21 +148,70 @@ class EditarPerfil : AppCompatActivity() {
             return
         }
 
-//        if (fNac.isEmpty()) {
-//            Toast.makeText(this, "Selecciona tu fecha de nacimiento", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-
         progressDialog.setMessage("Actualizando perfil...")
         progressDialog.show()
 
         if (imageUri == null) {
+            // --- MODIFICADO ---
+            // Caso 1: El usuario no cambió la foto.
+            // Simplemente actualizamos la info con la URL que ya teníamos.
             actualizarInfoEnDB(nombres, fNac, telefono, codTelefono, miUrlImagenPerfil)
         } else {
-            val uriLocalString = imageUri.toString()
-            actualizarInfoEnDB(nombres, fNac, telefono, codTelefono, uriLocalString)
+            // Caso 2: El usuario seleccionó una NUEVA foto.
+            // Tenemos que subirla primero.
+            subirImagenDePerfil(imageUri!!, nombres, fNac, telefono, codTelefono)
+            // --- FIN MODIFICADO ---
         }
     }
+
+    // --- >>> ¡FUNCIÓN NUEVA! <<< ---
+    private fun subirImagenDePerfil(
+        uri: Uri,
+        nombres: String,
+        fNac: String,
+        telefono: String,
+        codTelefono: String
+    ) {
+        val uid = firebaseAuth.uid ?: return
+        Log.d("EditarPerfil", "Iniciando subida de imagen de perfil...")
+
+        // 1. Comprimir la imagen
+        val imagenComprimida = ImageCompressor.compressImage(this, uri, quality = 80, maxSizeKb = 500)
+
+        if (imagenComprimida == null) {
+            progressDialog.dismiss()
+            Toast.makeText(this, "Error al procesar la imagen", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 2. Definir la ruta en Storage (Debe coincidir con tus reglas)
+        val storageRef = storage.getReference("ProfileImages/$uid/profile.jpg")
+
+        // 3. Subir el array de bytes
+        storageRef.putBytes(imagenComprimida)
+            .addOnSuccessListener {
+                Log.d("EditarPerfil", "Imagen subida a Storage. Obteniendo URL...")
+                // 4. Obtener la URL de descarga
+                storageRef.downloadUrl
+                    .addOnSuccessListener { downloadUrl ->
+                        // 5. AHORA SÍ, actualizar la DB con la nueva URL
+                        Log.d("EditarPerfil", "URL obtenida: $downloadUrl")
+                        actualizarInfoEnDB(nombres, fNac, telefono, codTelefono, downloadUrl.toString())
+                    }
+                    .addOnFailureListener { e ->
+                        progressDialog.dismiss()
+                        Log.e("EditarPerfil", "Error al obtener URL", e)
+                        Toast.makeText(this, "Error al obtener URL: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                progressDialog.dismiss()
+                Log.e("EditarPerfil", "Error al subir imagen", e)
+                Toast.makeText(this, "Error al subir imagen: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+    // --- >>> FIN FUNCIÓN NUEVA <<< ---
+
 
     private fun actualizarInfoEnDB(nombres: String, fNac: String, telefono: String, codTelefono: String, imagenUrl: String) {
         val uid = firebaseAuth.uid!!
@@ -169,7 +222,7 @@ class EditarPerfil : AppCompatActivity() {
         hashMap["fecha_nac"] = fNac // <-- Se guarda la nueva fecha
         hashMap["telefono"] = telefono
         hashMap["codigoTelefono"] = codTelefono
-        hashMap["urlImagenPerfil"] = imagenUrl
+        hashMap["urlImagenPerfil"] = imagenUrl // <-- USA LA URL (local o de Storage)
 
         ref.child(uid).updateChildren(hashMap)
             .addOnSuccessListener {

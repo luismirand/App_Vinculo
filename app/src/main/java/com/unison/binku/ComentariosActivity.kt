@@ -56,10 +56,11 @@ class ComentariosActivity : AppCompatActivity() {
         }
 
         // ====== ViewModel ======
-        viewModel = ViewModelProvider(
-            this,
-            CommentsVMFactory(postId)
-        )[CommentsViewModel::class.java]
+        // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
+        // Ahora pasamos "application" a la factory
+        val factory = CommentsVMFactory(application, postId)
+        viewModel = ViewModelProvider(this, factory)[CommentsViewModel::class.java]
+        // --- >>> FIN DE MODIFICACIÓN <<< ---
 
         // ====== Recycler + Adapter ======
         adapter = AdaptadorComentarios(
