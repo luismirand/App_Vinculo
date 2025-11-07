@@ -4,10 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.unison.binku.Constantes
 import com.unison.binku.Models.ModeloMensaje
 import com.unison.binku.R
 import java.text.SimpleDateFormat
@@ -30,12 +31,14 @@ class AdaptadorMensajes(
     inner class SentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvMensaje: TextView = itemView.findViewById(R.id.tvMensajeTexto)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
+        val ivImagen: ImageView = itemView.findViewById(R.id.ivImagen) // <-- NUEVO
     }
 
     // ViewHolder para mensajes RECIBIDOS
     inner class ReceivedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvMensaje: TextView = itemView.findViewById(R.id.tvMensajeTexto)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
+        val ivImagen: ImageView = itemView.findViewById(R.id.ivImagen) // <-- NUEVO
     }
 
     /**
@@ -70,15 +73,41 @@ class AdaptadorMensajes(
         val timeStr = timeFormat.format(Date(mensaje.timestamp))
 
         if (holder.itemViewType == VIEW_TYPE_SENT) {
-            // Es un ViewHolder de ENVIADO
             val sentHolder = holder as SentViewHolder
-            sentHolder.tvMensaje.text = mensaje.texto
-            sentHolder.tvTimestamp.text = timeStr
+            bindMessageData(sentHolder.tvMensaje, sentHolder.ivImagen, sentHolder.tvTimestamp, mensaje, timeStr)
         } else {
-            // Es un ViewHolder de RECIBIDO
             val receivedHolder = holder as ReceivedViewHolder
-            receivedHolder.tvMensaje.text = mensaje.texto
-            receivedHolder.tvTimestamp.text = timeStr
+            bindMessageData(receivedHolder.tvMensaje, receivedHolder.ivImagen, receivedHolder.tvTimestamp, mensaje, timeStr)
+        }
+    }
+
+    private fun bindMessageData(
+        tvMensaje: TextView,
+        ivImagen: ImageView,
+        tvTimestamp: TextView,
+        mensaje: ModeloMensaje,
+        timeStr: String
+    ) {
+        // Cargar Timestamp
+        tvTimestamp.text = timeStr
+
+        // Cargar Texto
+        if (mensaje.texto.isNotBlank()) {
+            tvMensaje.text = mensaje.texto
+            tvMensaje.visibility = View.VISIBLE
+        } else {
+            tvMensaje.visibility = View.GONE
+        }
+
+        // Cargar Imagen
+        if (mensaje.imagenUrl.isNotBlank()) {
+            ivImagen.visibility = View.VISIBLE
+            Glide.with(context)
+                .load(mensaje.imagenUrl)
+                .placeholder(R.color.guinda_ripple)
+                .into(ivImagen)
+        } else {
+            ivImagen.visibility = View.GONE
         }
     }
 

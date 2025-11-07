@@ -32,6 +32,7 @@ class AdaptadorPost(
         val btnDelete: ImageButton = binding.btnDeletePost
         val tvLocation: TextView = binding.tvPostLocation
         val tvLikeCount: TextView = binding.tvLikeCount
+        val tvCommentCount: TextView = binding.tvCommentCount
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -93,6 +94,8 @@ class AdaptadorPost(
         holder.binding.btnLike.setIconTintResource(likeIconColor)
         holder.binding.btnLike.setOnClickListener { onLikeClick(post.postId) }
 
+        // --- MODIFICADO: Añadido isLikedPorUsuarioActual al intent ---
+        holder.tvCommentCount.text = post.contadorComentarios.toString()
         holder.binding.btnComment.setOnClickListener {
             val intent = Intent(context, com.unison.binku.ComentariosActivity::class.java).apply {
                 putExtra("POST_ID", post.postId)
@@ -103,9 +106,12 @@ class AdaptadorPost(
                 putExtra("POST_UBICACION", post.ubicacion)
                 putExtra("POST_TIMESTAMP", post.timestamp)
                 putExtra("POST_UID_AUTOR", post.uidAutor)
+                putExtra("POST_LIKE_COUNT", post.contadorLikes)
+                putExtra("POST_IS_LIKED", post.isLikedPorUsuarioActual) // <-- NUEVO
             }
             context.startActivity(intent)
         }
+        // --- FIN DE MODIFICACIÓN ---
 
         // Borrar
         if (post.uidAutor == currentUserId) {

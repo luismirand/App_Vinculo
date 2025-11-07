@@ -14,7 +14,6 @@ import com.google.firebase.database.Transaction
 import com.google.firebase.storage.FirebaseStorage
 import com.unison.binku.ImageCompressor
 
-// --- MODIFICADO: ViewModel -> AndroidViewModel ---
 class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _posts = MutableLiveData<ArrayList<ModeloPost>>(arrayListOf())
@@ -26,7 +25,6 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val currentUserId = firebaseAuth.currentUser?.uid
 
-    // --- MODIFICADO: Añadido contexto ---
     private val context = application.applicationContext
 
     // Listener en tiempo real
@@ -40,6 +38,11 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                         post.postId = ds.key ?: ""
                         post.contadorLikes = ds.child("contadorLikes").getValue(Int::class.java) ?: 0
                         post.urlAvatarAutor = ds.child("urlAvatarAutor").getValue(String::class.java) ?: ""
+
+                        // --- MODIFICADO: Añadido contador de comentarios ---
+                        post.contadorComentarios = (ds.child("Comments").childrenCount).toInt()
+                        // --- FIN DE MODIFICACIÓN ---
+
                         if (currentUserId != null) {
                             post.isLikedPorUsuarioActual = ds.child("Likes").hasChild(currentUserId)
                         } else {
@@ -102,9 +105,6 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    /**
-     * Agrega un post.
-     */
     fun agregarPostFirebase(postText: String, imageUriString: String?, location: String) {
         val currentUser = firebaseAuth.currentUser ?: return
         val currentUserUid = currentUser.uid
@@ -132,7 +132,8 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                             timestamp = System.currentTimeMillis(),
                             ubicacion = location,
                             contadorLikes = 0,
-                            urlAvatarAutor = avatarUrl
+                            urlAvatarAutor = avatarUrl,
+                            contadorComentarios = 0 // <-- NUEVO
                         )
                         guardarPost(postId, post)
                         return
@@ -140,9 +141,6 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
                     // 2) Con imagen -> intentar subir a Storage
                     val localUri = Uri.parse(imageUriString)
-
-                    // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
-                    // Comprimir la imagen ANTES de subirla
                     val imagenComprimida = ImageCompressor.compressImage(context, localUri, quality = 80, maxSizeKb = 500)
 
                     if (imagenComprimida == null) {
@@ -150,15 +148,11 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                         guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                         return
                     }
-                    // --- >>> FIN DE MODIFICACIÓN <<< ---
-
 
                     try {
                         val storageRef = FirebaseStorage.getInstance()
-                            .getReference("PostImages/$currentUserUid/$postId.jpg") // Ruta de las reglas
+                            .getReference("PostImages/$currentUserUid/$postId.jpg")
 
-                        // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
-                        // En lugar de .putFile(localUri), usamos .putBytes(imagenComprimida)
                         storageRef.putBytes(imagenComprimida)
                             .addOnSuccessListener {
                                 storageRef.downloadUrl
@@ -171,7 +165,8 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                                             timestamp = System.currentTimeMillis(),
                                             ubicacion = location,
                                             contadorLikes = 0,
-                                            urlAvatarAutor = avatarUrl
+                                            urlAvatarAutor = avatarUrl,
+                                            contadorComentarios = 0 // <-- NUEVO
                                         )
                                         guardarPost(postId, post)
                                     }
@@ -185,7 +180,6 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                                 guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                             }
                     } catch (e: Exception) {
-                        // Por ejemplo: Storage no configurado en el proyecto
                         Log.w("FeedViewModel", "Storage no disponible, guardo URI local: ${e.message}")
                         guardarPostConLocalUri(postId, currentUserUid, nombreUsuario, postText, imageUriString, location, avatarUrl)
                     }
@@ -210,16 +204,16 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
             uidAutor = uid,
             nombreAutor = nombre,
             textoPost = texto,
-            imagenUrlPost = localUriString, // content:// o file:// (solo visible localmente)
+            imagenUrlPost = localUriString,
             timestamp = System.currentTimeMillis(),
             ubicacion = location,
             contadorLikes = 0,
-            urlAvatarAutor = avatarUrl
+            urlAvatarAutor = avatarUrl,
+            contadorComentarios = 0 // <-- NUEVO
         )
         guardarPost(postId, post)
     }
 
-    /** <-- MÉTODO PÚBLICO USADO EN EL FRAGMENT */
     fun eliminarPostFirebase(postId: String) {
         if (postId.isEmpty()) {
             Log.w("FeedViewModel", "Attempted to delete post with empty ID")

@@ -1,18 +1,24 @@
 package com.unison.binku
 
+import android.app.Activity
+import android.content.ContentValues
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.view.Menu
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
 import com.unison.binku.Adaptadores.AdaptadorComentarios
-import com.unison.binku.Models.ModeloComentario
 import com.unison.binku.ViewModels.CommentsVMFactory
 import com.unison.binku.ViewModels.CommentsViewModel
 import com.unison.binku.databinding.ActivityComentariosBinding
@@ -26,9 +32,9 @@ class ComentariosActivity : AppCompatActivity() {
     private lateinit var adapter: AdaptadorComentarios
 
     private var postId: String = ""
-    private var selectedImageUri: Uri? = null
+    private var selectedImageUri: Uri? = null // Usado por ambos launchers
 
-    private val pickImageLauncher = registerForActivityResult(
+    private val galeriaLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
@@ -39,12 +45,25 @@ class ComentariosActivity : AppCompatActivity() {
         }
     }
 
+    private val cameraActivityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            binding.ivPreview.setImageURI(selectedImageUri)
+            binding.ivPreview.visibility = View.VISIBLE
+            binding.btnRemovePreview.visibility = View.VISIBLE
+        } else {
+            Toast.makeText(this, "Captura cancelada", Toast.LENGTH_SHORT).show()
+            selectedImageUri = null
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityComentariosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ====== OBTENER POST_ID (acepta ambas llaves por compatibilidad) ======
         postId = intent.getStringExtra("POST_ID")
             ?: intent.getStringExtra("postId")
                     ?: ""
@@ -56,11 +75,8 @@ class ComentariosActivity : AppCompatActivity() {
         }
 
         // ====== ViewModel ======
-        // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
-        // Ahora pasamos "application" a la factory
         val factory = CommentsVMFactory(application, postId)
         viewModel = ViewModelProvider(this, factory)[CommentsViewModel::class.java]
-        // --- >>> FIN DE MODIFICACIÓN <<< ---
 
         // ====== Recycler + Adapter ======
         adapter = AdaptadorComentarios(
@@ -76,15 +92,23 @@ class ComentariosActivity : AppCompatActivity() {
             if (!list.isNullOrEmpty()) binding.rvComentarios.smoothScrollToPosition(list.size - 1)
         }
 
-        // ====== Header del post ======
-        // 1) Si vienen extras, pintamos rápido (mejor UX)
-        pintarHeaderConExtrasSiHay()
-        // 2) Además consultamos DB por si hay cambios o no vinieron extras
-        cargarHeaderPostDesdeDB(postId)
+        // --- NUEVO: Observar Likes del Post ---
+        viewModel.postLikes.observe(this) { likes ->
+            binding.tvHeaderLikeCountText.text = likes.toString()
+        }
+        viewModel.isPostLiked.observe(this) { isLiked ->
+            val likeIconColor = if (isLiked) R.color.guinda else R.color.gris_oscuro
+            binding.btnHeaderLike.setIconTintResource(likeIconColor)
+        }
+        // --- FIN DE NUEVO ---
 
-        // ====== Acciones ======
+        // ====== Header del post ======
+        pintarHeaderConExtrasSiHay()
+        cargarHeaderPostDesdeDB(postId) // Esto sobreescribirá los likes con datos en vivo
+
+        // ====== Acciones (MODIFICADO) ======
         binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        binding.btnAddImage.setOnClickListener { pickImageLauncher.launch("image/*") }
+        binding.btnAddImage.setOnClickListener { mostrarOpcionesAdjuntar() }
         binding.btnRemovePreview.setOnClickListener {
             selectedImageUri = null
             binding.ivPreview.setImageDrawable(null)
@@ -92,12 +116,54 @@ class ComentariosActivity : AppCompatActivity() {
             binding.btnRemovePreview.visibility = View.GONE
         }
         binding.btnSend.setOnClickListener { enviarComentario() }
+        binding.btnHeaderLike.setOnClickListener { viewModel.toggleLikePost() } // <-- NUEVO
 
         binding.etComment.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 enviarComentario(); true
             } else false
         }
+    }
+
+    // --- NUEVO: Mostrar Popup para Cámara/Galería ---
+    private fun mostrarOpcionesAdjuntar() {
+        val popupMenu = PopupMenu(this, binding.btnAddImage)
+        popupMenu.menu.add(Menu.NONE, 1, 1, "Cámara")
+        popupMenu.menu.add(Menu.NONE, 2, 2, "Galería")
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> { // Cámara
+                    abrirCamara()
+                    true
+                }
+                2 -> { // Galería
+                    galeriaLauncher.launch("image/*")
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    // --- NUEVO: Lógica para abrir la cámara ---
+    private fun abrirCamara() {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.TITLE, "Binku_Comentario_${System.currentTimeMillis()}")
+            put(MediaStore.Images.Media.DESCRIPTION, "Foto para Comentario Binku")
+        }
+        selectedImageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+        if (selectedImageUri == null) {
+            Toast.makeText(this, "No se pudo crear archivo para la foto", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri)
+        }
+        cameraActivityResultLauncher.launch(intent)
     }
 
     private fun enviarComentario() {
@@ -116,6 +182,7 @@ class ComentariosActivity : AppCompatActivity() {
         binding.btnRemovePreview.visibility = View.GONE
     }
 
+    // --- MODIFICADO: Para leer y mostrar el estado inicial de likes ---
     private fun pintarHeaderConExtrasSiHay() {
         val nombre = intent.getStringExtra("POST_NOMBRE")
         val avatar = intent.getStringExtra("POST_AVATAR")
@@ -123,6 +190,8 @@ class ComentariosActivity : AppCompatActivity() {
         val imagen = intent.getStringExtra("POST_IMAGEN")
         val ubicacion = intent.getStringExtra("POST_UBICACION") ?: ""
         val ts = intent.getLongExtra("POST_TIMESTAMP", 0L)
+        val likes = intent.getIntExtra("POST_LIKE_COUNT", 0) // <-- MODIFICADO
+        val isLiked = intent.getBooleanExtra("POST_IS_LIKED", false) // <-- NUEVO
 
         if (nombre != null) binding.tvNombreAutor.text = nombre
         if (!avatar.isNullOrBlank()) {
@@ -151,9 +220,17 @@ class ComentariosActivity : AppCompatActivity() {
             binding.tvFechaYUbicacion.text =
                 if (ubicacion.isBlank()) fecha else "$fecha · $ubicacion"
         }
+
+        // --- NUEVO: Asignar estado inicial de likes ---
+        binding.tvHeaderLikeCountText.text = likes.toString()
+        val likeIconColor = if (isLiked) R.color.guinda else R.color.gris_oscuro
+        binding.btnHeaderLike.setIconTintResource(likeIconColor)
+        // --- FIN DE NUEVO ---
     }
 
     private fun cargarHeaderPostDesdeDB(postId: String) {
+        // Esta función ahora solo cargará la info estática
+        // Los likes se actualizan en vivo por el listener del ViewModel
         val postRef = FirebaseDatabase.getInstance().getReference("Posts").child(postId)
         postRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snap: DataSnapshot) {

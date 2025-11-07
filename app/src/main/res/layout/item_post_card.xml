@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 1. Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +26,6 @@
             android:paddingEnd="8dp"
             android:paddingBottom="8dp">
 
-            <!-- Author Avatar -->
             <ImageView
                 android:id="@+id/iv_user_avatar"
                 android:layout_width="48dp"
@@ -54,24 +52,20 @@
                     android:textSize="16sp"
                     android:textColor="@android:color/black"/>
 
-                <!-- Location TextView -->
                 <TextView
                     android:id="@+id/tv_post_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="en Hermosillo, Sonora"
                     android:textSize="12sp"
-                    android:visibility="gone"/> <!-- Initially hidden -->
-
-                <TextView
-                    android:id="@+id/tv_post_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="hace 1 hora"
-                    android:textSize="12sp"/>
+                    android:visibility="gone"/> <TextView
+                android:id="@+id/tv_post_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="hace 1 hora"
+                android:textSize="12sp"/>
             </LinearLayout>
 
-            <!-- Delete Post Button -->
             <ImageButton
                 android:id="@+id/btn_delete_post"
                 android:layout_width="48dp"
@@ -86,7 +80,6 @@
 
         </RelativeLayout>
 
-        <!-- 2. Body -->
         <TextView
             android:id="@+id/tv_post_content"
             android:layout_width="match_parent"
@@ -110,7 +103,6 @@
             android:visibility="gone"
             android:contentDescription="Imagen de la publicación"/>
 
-        <!-- 3. Footer (Actions) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -121,7 +113,6 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
 
-            <!-- Like Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_like"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
@@ -131,7 +122,6 @@
                 app:iconTint="@color/black"
                 tools:ignore="SpeakableTextPresentCheck" />
 
-            <!-- Like Counter -->
             <TextView
                 android:id="@+id/tv_like_count"
                 android:layout_width="wrap_content"
@@ -140,7 +130,6 @@
                 android:textSize="14sp"
                 tools:text="0" />
 
-            <!-- Comment Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_comment"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
@@ -149,8 +138,15 @@
                 android:layout_marginStart="16dp"
                 app:icon="@drawable/ic_comment"
                 app:iconTint="@android:color/darker_gray"
-
                 tools:ignore="SpeakableTextPresentCheck" />
+
+            <TextView
+                android:id="@+id/tv_comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textSize="14sp"
+                tools:text="0" />
 
 
         </LinearLayout>

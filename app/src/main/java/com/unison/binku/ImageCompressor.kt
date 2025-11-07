@@ -23,6 +23,13 @@ object ImageCompressor {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream?.close()
 
+            // --- >>> ¡VERIFICACIÓN DE NULIDAD AÑADIDA! <<< ---
+            if (bitmap == null) {
+                Log.e("ImageCompressor", "BitmapFactory.decodeStream devolvió null. La URI puede ser inválida o la imagen estar corrupta.")
+                return null
+            }
+            // --- >>> FIN DE LA VERIFICACIÓN <<< ---
+
             var currentQuality = quality
             var outputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, currentQuality, outputStream)

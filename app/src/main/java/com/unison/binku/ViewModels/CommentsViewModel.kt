@@ -12,21 +12,32 @@ import com.google.firebase.storage.FirebaseStorage
 import com.unison.binku.ImageCompressor
 import com.unison.binku.Models.ModeloComentario
 
-// --- MODIFICADO: ViewModel -> AndroidViewModel y constructor ---
 class CommentsViewModel(application: Application, private val postId: String) : AndroidViewModel(application) {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val currentUid = auth.currentUser?.uid
 
-    // --- MODIFICADO: Añadido contexto ---
     private val context = application.applicationContext
 
     private val usuariosRef = db.getReference("Usuarios")
     private val commentsRef = db.getReference("Posts").child(postId).child("Comments")
 
+    // --- NUEVO: Referencia al post principal ---
+    private val postRef = db.getReference("Posts").child(postId)
+
     private val _comments = MutableLiveData<ArrayList<ModeloComentario>>(arrayListOf())
     val comments: LiveData<ArrayList<ModeloComentario>> get() = _comments
+
+    // --- NUEVO: LiveData para el Like del Post ---
+    private val _postLikes = MutableLiveData<Int>()
+    val postLikes: LiveData<Int> get() = _postLikes
+
+    private val _isPostLiked = MutableLiveData<Boolean>()
+    val isPostLiked: LiveData<Boolean> get() = _isPostLiked
+
+    private var postListener: ValueEventListener? = null
+    // --- FIN DE NUEVO ---
 
     private val commentsListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -38,7 +49,7 @@ class CommentsViewModel(application: Application, private val postId: String) : 
                         model.commentId = cs.key ?: ""
                         model.contadorLikes = cs.child("contadorLikes").getValue(Int::class.java) ?: 0
                         model.urlAvatarAutor = cs.child("urlAvatarAutor").getValue(String::class.java)
-                            ?.takeIf { it.isNotBlank() && it != "null" } ?: "" // Si es null o vacío, usar ""
+                            ?.takeIf { it.isNotBlank() && it != "null" } ?: ""
                         model.isLikedPorUsuarioActual = currentUid?.let { cs.child("Likes").hasChild(it) } ?: false
                         list.add(model)
                     }
@@ -57,6 +68,49 @@ class CommentsViewModel(application: Application, private val postId: String) : 
 
     init {
         commentsRef.orderByChild("timestamp").addValueEventListener(commentsListener)
+        listenToPostUpdates() // <-- NUEVO
+    }
+
+    // --- NUEVO: Función para escuchar likes del post ---
+    private fun listenToPostUpdates() {
+        postListener = postRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val likesCount = snapshot.child("contadorLikes").getValue(Int::class.java) ?: 0
+                val isLiked = currentUid?.let { snapshot.child("Likes").hasChild(it) } ?: false
+                _postLikes.value = likesCount
+                _isPostLiked.value = isLiked
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("CommentsVM", "Error escuchando post likes: ${error.message}")
+            }
+        })
+    }
+
+    // --- NUEVO: Función para dar like al post ---
+    fun toggleLikePost() {
+        val uid = currentUid ?: return
+
+        postRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                val likesNode = mutableData.child("Likes")
+                val likesCountNode = mutableData.child("contadorLikes")
+                val likesCount = likesCountNode.getValue(Long::class.java)?.toInt() ?: 0
+
+                if (likesNode.hasChild(uid)) {
+                    // Quitar like
+                    likesCountNode.value = (likesCount - 1).coerceAtLeast(0)
+                    likesNode.child(uid).value = null
+                } else {
+                    // Poner like
+                    likesCountNode.value = likesCount + 1
+                    likesNode.child(uid).value = true
+                }
+                return Transaction.success(mutableData)
+            }
+            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                if (error != null) Log.e("CommentsVM", "Error like post: ${error.message}")
+            }
+        })
     }
 
     fun toggleLike(commentId: String) {
@@ -99,7 +153,7 @@ class CommentsViewModel(application: Application, private val postId: String) : 
                     ?.takeIf { it.isNotBlank() } ?: (user.displayName ?: "Usuario Binku")
 
                 val avatarUrl = snapshot.child("urlImagenPerfil").getValue(String::class.java)
-                    ?.takeIf { it.isNotBlank() && it != "null" } ?: "" // Si es null o vacío, usar ""
+                    ?.takeIf { it.isNotBlank() && it != "null" } ?: ""
 
                 val commentId = commentsRef.push().key ?: return
 
@@ -115,7 +169,17 @@ class CommentsViewModel(application: Application, private val postId: String) : 
                         isLikedPorUsuarioActual = false,
                         urlAvatarAutor = avatarUrl
                     )
-                    commentsRef.child(commentId).setValue(c)
+                    commentsRef.child(commentId).setValue(c).addOnSuccessListener {
+                        // --- NUEVO: Actualizar contador de comentarios en el post principal ---
+                        postRef.child("contadorComentarios").runTransaction(object : Transaction.Handler {
+                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                val count = currentData.getValue(Long::class.java) ?: 0L
+                                currentData.value = count + 1
+                                return Transaction.success(currentData)
+                            }
+                            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {}
+                        })
+                    }
                 }
 
                 if (imageUriStr.isNullOrBlank()) {
@@ -124,24 +188,17 @@ class CommentsViewModel(application: Application, private val postId: String) : 
                 }
 
                 val localUri = Uri.parse(imageUriStr)
-
-                // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
-                // Comprimir la imagen ANTES de subirla
-                val imagenComprimida = ImageCompressor.compressImage(context, localUri, quality = 80, maxSizeKb = 400) // 400KB para comentarios
+                val imagenComprimida = ImageCompressor.compressImage(context, localUri, quality = 80, maxSizeKb = 400)
 
                 if (imagenComprimida == null) {
                     Log.w("CommentsVM", "No se pudo comprimir, guardo sin imagen")
                     save("")
                     return
                 }
-                // --- >>> FIN DE MODIFICACIÓN <<< ---
-
 
                 val storageRef = FirebaseStorage.getInstance()
-                    .getReference("CommentImages/$postId/$commentId.jpg") // Ruta de las reglas
+                    .getReference("CommentImages/$postId/$commentId.jpg")
 
-                // --- >>> ¡CÓDIGO MODIFICADO! <<< ---
-                // En lugar de .putFile(localUri), usamos .putBytes(imagenComprimida)
                 storageRef.putBytes(imagenComprimida)
                     .addOnSuccessListener {
                         storageRef.downloadUrl
@@ -166,5 +223,6 @@ class CommentsViewModel(application: Application, private val postId: String) : 
     override fun onCleared() {
         super.onCleared()
         commentsRef.removeEventListener(commentsListener)
+        postListener?.let { postRef.removeEventListener(it) } // <-- NUEVO
     }
 }
