@@ -164,7 +164,7 @@ class EditarPerfil : AppCompatActivity() {
         }
     }
 
-    // --- >>> ¡FUNCIÓN NUEVA! <<< ---
+
     private fun subirImagenDePerfil(
         uri: Uri,
         nombres: String,
@@ -175,7 +175,6 @@ class EditarPerfil : AppCompatActivity() {
         val uid = firebaseAuth.uid ?: return
         Log.d("EditarPerfil", "Iniciando subida de imagen de perfil...")
 
-        // 1. Comprimir la imagen
         val imagenComprimida = ImageCompressor.compressImage(this, uri, quality = 80, maxSizeKb = 500)
 
         if (imagenComprimida == null) {
@@ -184,17 +183,15 @@ class EditarPerfil : AppCompatActivity() {
             return
         }
 
-        // 2. Definir la ruta en Storage (Debe coincidir con tus reglas)
         val storageRef = storage.getReference("ProfileImages/$uid/profile.jpg")
 
-        // 3. Subir el array de bytes
         storageRef.putBytes(imagenComprimida)
             .addOnSuccessListener {
                 Log.d("EditarPerfil", "Imagen subida a Storage. Obteniendo URL...")
-                // 4. Obtener la URL de descarga
+
                 storageRef.downloadUrl
                     .addOnSuccessListener { downloadUrl ->
-                        // 5. AHORA SÍ, actualizar la DB con la nueva URL
+
                         Log.d("EditarPerfil", "URL obtenida: $downloadUrl")
                         actualizarInfoEnDB(nombres, fNac, telefono, codTelefono, downloadUrl.toString())
                     }
@@ -210,7 +207,6 @@ class EditarPerfil : AppCompatActivity() {
                 Toast.makeText(this, "Error al subir imagen: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
-    // --- >>> FIN FUNCIÓN NUEVA <<< ---
 
 
     private fun actualizarInfoEnDB(nombres: String, fNac: String, telefono: String, codTelefono: String, imagenUrl: String) {

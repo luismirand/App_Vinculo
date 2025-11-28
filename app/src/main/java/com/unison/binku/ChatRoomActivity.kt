@@ -48,7 +48,6 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    // --- >>> ¡LAUNCHER DE CÁMARA CORREGIDO! <<< ---
     // Usamos el contrato 'TakePicture' que es más robusto
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicture()
